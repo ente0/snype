@@ -378,8 +378,8 @@ def handle_option(option, iface1=None, iface2=None, channel=None, selected_bssid
         
         result = os.system(cmd)
         
-        if result != 0:
-            print(colored(f"Script execution failed with exit code {result}", 'red'))
+        #if result != 0:
+        #    print(colored(f"Script execution failed with exit code {result}", 'red'))
     
     except FileNotFoundError as e:
         print(colored(f"Error: {e}", 'red'))
