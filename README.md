@@ -149,7 +149,8 @@ sudo pacman -S aircrack-ng python python-pip python-termcolor hcxtools hcxdumpto
 - Review captured handshake files
 - Prepare for password recovery
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/dded9dbb-9895-481e-8ecb-364ad28ca4b5" alt="Cracking Preparation">
+  <img src="https://github.com/user-attachments/assets/33f4cc97-64cc-42fe-850d-d36f4fcedbaa
+" alt="Cracking Preparation">
 </p>
 
 
