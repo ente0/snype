@@ -58,7 +58,7 @@ git clone https://github.com/ente0/snype.git
 cd snype
 ```
 
-### Distribution-Specific Installation Commands
+### Dependencies Installation Commands
 
 <details>
 <summary>Click to expand installation commands</summary>
