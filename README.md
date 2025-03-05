@@ -94,78 +94,74 @@ sudo pacman -S aircrack-ng python python-pip python-termcolor hcxtools hcxdumpto
 ### Step-by-Step Usage Guide
 
 #### 1. Interface Configuration
+- Select and configure wireless interfaces for monitoring and injection
+- Activate monitor mode for your wireless adapter
 <p align="center">
   <img src="https://github.com/user-attachments/assets/dd9cf807-412a-457c-9e71-82c090e36402" alt="Interface Configuration">
 </p>
-- Select and configure wireless interfaces for monitoring and injection
-- Activate monitor mode for your wireless adapter
+
 
 #### 2. Network Scanning
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/15c3c3ce-1fb6-43ea-b4ae-331e9f088633" alt="Network Scanning">
-</p>
 - Initiate network reconnaissance
 - Discover available wireless networks
 - View detailed network information
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/15c3c3ce-1fb6-43ea-b4ae-331e9f088633" alt="Network Scanning">
+</p>
+
 
 #### 3. Target Selection
+- Choose specific target network
+- View network details and client information
 <p align="center">
   <img src="https://github.com/user-attachments/assets/283f8310-785e-45de-b5ef-547cc7e4eb17" alt="Access Point Selection">
 </p>
-- Choose specific target network
-- View network details and client information
+
 
 #### 4. Detailed Target Information
+- Analyze selected network's characteristics
+- Prepare for targeted monitoring and attacks
 <p align="center">
   <img src="https://github.com/user-attachments/assets/34224c95-4fab-4549-9807-d2118590ab04" alt="Target Details">
 </p>
-- Analyze selected network's characteristics
-- Prepare for targeted monitoring and attacks
+
 
 #### 5. Deauthentication Setup
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/8b813b9c-2bc1-4179-968b-99ac2c7ffc52" alt="Deauthentication Process">
-</p>
 - Dual-terminal approach for monitoring and injection
 - Carefully orchestrate client disconnection
 - Capture WPA handshake
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/8b813b9c-2bc1-4179-968b-99ac2c7ffc52" alt="Deauthentication Process">
+</p>
+
 
 #### 6. Handshake Capture
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/44a1eed7-ac8a-403a-bb41-92c92988508a" alt="Handshake Capture">
-</p>
 - Successfully capture WPA handshake
 - Generate compatible files for:
   - Hashcat (.hc22000)
   - Aircrack-ng (.cap)
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/44a1eed7-ac8a-403a-bb41-92c92988508a" alt="Handshake Capture">
+</p>
+
 
 #### 7. Cracking Preparation
+- Review captured handshake files
+- Prepare for password recovery
 <p align="center">
   <img src="https://github.com/user-attachments/assets/dded9dbb-9895-481e-8ecb-364ad28ca4b5" alt="Cracking Preparation">
 </p>
-- Review captured handshake files
-- Prepare for password recovery
+
 
 #### 8. Wordlist Cracking
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/935cf6c2-25c2-424a-abca-892a4ba5e53e" alt="Wordlist Cracking">
-</p>
 - Select appropriate wordlist
 - Initiate password recovery process
 - View cracking progress and results
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/935cf6c2-25c2-424a-abca-892a4ba5e53e" alt="Wordlist Cracking">
+</p>
 
-### 🔍 Pro Tips
-- Always use in controlled, authorized environments
-- Ensure you have explicit permission
-- Respect legal and ethical boundaries
 
-## 🧰 Advanced Usage
-
-### Handshake Capture Techniques
-
-- **Passive Monitoring**: Wait for natural handshakes (slower but stealthier)
-- **Active Deauthentication**: Force client reconnections to capture handshakes quickly
-- **Targeted Deauthentication**: Focus on specific high-value clients
 
 ## 🔓 Recommended Password Recovery: hashCrack
 
