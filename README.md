@@ -110,7 +110,7 @@ sudo pacman -S aircrack-ng python python-pip python-termcolor hcxtools hcxdumpto
 
 #### 3. Target Selection
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/3c3f7f07-bdc7-48d0-a608-680d755f47ea" alt="Access Point Selection">
+  <img src="https://github.com/user-attachments/assets/283f8310-785e-45de-b5ef-547cc7e4eb17" alt="Access Point Selection">
 </p>
 - Choose specific target network
 - View network details and client information
@@ -148,7 +148,7 @@ sudo pacman -S aircrack-ng python python-pip python-termcolor hcxtools hcxdumpto
 
 #### 8. Wordlist Cracking
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/8b913b95-4fab-4549-9807-d2118590ab04" alt="Wordlist Cracking">
+  <img src="https://github.com/user-attachments/assets/935cf6c2-25c2-424a-abca-892a4ba5e53e" alt="Wordlist Cracking">
 </p>
 - Select appropriate wordlist
 - Initiate password recovery process
