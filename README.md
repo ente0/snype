@@ -138,25 +138,29 @@ sudo pacman -S aircrack-ng python python-pip python-termcolor hcxtools hcxdumpto
 </p>
 
 
-#### 6. 
+#### 6. Cracking Preparation
+- Review captured handshake files
+- Prepare for password recovery
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/220f5001-13f3-4c7f-b215-f22d2002c418" alt="Handshake Capture">
 </p>
 
 
-#### 7. Cracking Preparation
-- Review captured handshake files
-- Prepare for password recovery
+#### 7. Wordlist Cracking
+- Select appropriate wordlist
+- Initiate password recovery process
+- View cracking progress and results
 <p align="center">
   <img src="https://github.com/user-attachments/assets/3dad9376-a6d4-4b6f-81cb-d0c7fcf5a492" alt="Cracking Preparation">
 </p>
 
 
-#### 8. Wordlist Cracking
-- Select appropriate wordlist
-- Initiate password recovery process
-- View cracking progress and results
+#### 8. Password Recovery in Progress
+- Initiate password recovery using selected wordlist
+- Monitor real-time cracking progress
+- Wait for potential password discovery
+- Analyze and validate recovered credentials
 <p align="center">
   <img src="https://github.com/user-attachments/assets/935cf6c2-25c2-424a-abca-892a4ba5e53e" alt="Wordlist Cracking">
 </p>
