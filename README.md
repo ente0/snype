@@ -1,8 +1,8 @@
-<!--
+
 <p align="center">
-  <img src=""/>
+  <img src="![banner](https://github.com/user-attachments/assets/43bdf315-eed1-417c-be4e-c5488fa9a6e7)"/>
 </p>
--->
+
 <p align="center">
   <img src="https://img.shields.io/github/license/ente0/snype">
   <img src="https://img.shields.io/badge/language-python-green" alt="Language: Python">
