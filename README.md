@@ -193,7 +193,7 @@ For advanced password cracking capabilities, we highly recommend integrating Sny
    ```
 
 ### Benefits
-- Faster cracking performance
+- Faster cracking performance (with GPU)
 - More sophisticated attack modes
 - Comprehensive wordlist handling
 - Simplified cracking process
