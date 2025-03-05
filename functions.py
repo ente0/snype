@@ -163,18 +163,6 @@ def show_status_info():
         if essid:
             status.append(f"ESSID: {colored(essid, 'yellow')}")
     
-    handshake_found = False
-    if os.path.exists("handshake_flag.txt"):
-        with open("handshake_flag.txt", "r") as f:
-            handshake_found = f.read().strip() == "1"
-
-    if handshake_found:
-        cap_file = get_latest_cap_file()
-        if cap_file:
-            status.append(f"Handshake found: {colored(cap_file, 'magenta')}")
-        else:
-            status.append(f"Handshake found: {colored('No cap file found', 'red')}")
-    
     return "   " + " | ".join(status) if status else ""
 
 
@@ -238,16 +226,20 @@ def show_menu2():
     print(colored(separator, 'cyan'))
     print(colored(f"   Welcome to snype!", 'cyan', attrs=['bold']))
     
-    hc22000_files, processed_cap_files = check_and_convert_cap_files()
-    
+    hc22000_files, cap_files, processed_cap_files = check_and_convert_cap_files()    
     #if processed_cap_files:
     #    print(colored(f"   [*] Processing {len(processed_cap_files)} .cap file(s) in background", 'yellow'))
     
     if hc22000_files:
-        print(colored(f"   [✓] {len(hc22000_files)} hc22000 file(s) generated:", 'green'))
+        print(colored(f"   [✓] {len(hc22000_files)} .hc22000 file(s) generated:", 'green'))
         for file in hc22000_files:
             print(colored(f"       - {file}", 'green'))
     
+    if cap_files:
+        print(colored(f"   [✓] {len(cap_files)} .cap file(s) found:", 'green'))
+        for file in cap_files:
+            print(colored(f"       - {file}", 'green'))
+
     print(colored(separator, 'cyan'))
 
     status_info = show_status_info()
@@ -260,22 +252,24 @@ def show_menu2():
         f"{colored('[1]', 'cyan', attrs=['bold'])} General reconnaissance",
         f"{colored('[2]', 'cyan', attrs=['bold'])} Watch target traffic",
         f"{colored('[3]', 'cyan', attrs=['bold'])} Deauthentication attack",
+        f"{colored('[4]', 'cyan', attrs=['bold'])} Wordlist cracking",
+
     ]
     print("\n   " + "\n   ".join(options))
 
     print(colored(dash_separator, 'cyan')) 
 
-    print(f"{colored('   [4]', 'magenta', attrs=['bold'])}  Flush services     ")
-    print(f"{colored('   [5]', 'magenta', attrs=['bold'])}  Change target BSSID")
-    print(f"{colored('   [6]', 'magenta', attrs=['bold'])}  Change interfaces  ")
-    print(f"{colored('   [7]', 'magenta', attrs=['bold'])}  Clear config files ")
-    print(f"{colored('   [8]', 'magenta', attrs=['bold'])}  Convert EAPOL to hc22000 ")
-    print(f"{colored('   [9]', 'magenta', attrs=['bold'])}  Delete capture files ")
-    print(f"{colored('   [10]', 'magenta', attrs=['bold'])} Delete essidlist files ")
+    print(f"{colored('   [5]', 'magenta', attrs=['bold'])}  Flush services     ")
+    print(f"{colored('   [6]', 'magenta', attrs=['bold'])}  Change target BSSID")
+    print(f"{colored('   [7]', 'magenta', attrs=['bold'])}  Change interfaces  ")
+    print(f"{colored('   [8]', 'magenta', attrs=['bold'])}  Clear config files ")
+    print(f"{colored('   [9]', 'magenta', attrs=['bold'])}  Convert EAPOL to hc22000 ")
+    print(f"{colored('   [10]', 'magenta', attrs=['bold'])}  Delete capture files ")
+    print(f"{colored('   [11]', 'magenta', attrs=['bold'])} Delete essidlist files ")
 
     print(colored("\n" + separator, 'magenta'))
 
-    user_option2 = input(colored("\nEnter option (1-10, Q to quit): ", 'cyan', attrs=['bold'])).strip().lower()
+    user_option2 = input(colored("\nEnter option (1-11, Q to quit): ", 'cyan', attrs=['bold'])).strip().lower()
 
     return user_option2
 
@@ -672,35 +666,35 @@ def delete_essidlist_files():
 def check_and_convert_cap_files():
     """
     Check for .cap files and convert them to hc22000 format in the background.
-    
     Returns:
     - A list of existing hc22000 files in the handshakes folder
+    - A list of existing .cap files in the handshakes folder
     - A list of .cap files that were processed
     """
-    def find_hc22000_files(directory):
-        hc22000_files = []
+    def find_files_in_directory(directory, extensions):
+        found_files = []
         for root, dirs, files in os.walk(directory):
             for file in files:
-                if file.endswith('.hc22000'):
-                    hc22000_files.append(os.path.join(root, file))
-        return hc22000_files
+                if any(file.endswith(ext) for ext in extensions):
+                    found_files.append(os.path.join(root, file))
+        return found_files
 
     cap_files = [f for f in os.listdir('.') if f.endswith('.cap')]
-    
     handshakes_dir = "handshakes"
     
     if not os.path.exists(handshakes_dir):
-        return [], []
-    
+        return [], [], []
+
     if not cap_files:
-        existing_hc22000_files = find_hc22000_files(handshakes_dir)
-        return existing_hc22000_files, []
-    
+        existing_hc22000_files = find_files_in_directory(handshakes_dir, ['.hc22000'])
+        existing_cap_files = find_files_in_directory(handshakes_dir, ['.cap'])
+        return existing_hc22000_files, existing_cap_files, []
+
     hc22000_files = []
     processed_cap_files = []
     
     try:
-        cleanup_essidlist_files()  # Assuming this function is defined elsewhere
+        cleanup_essidlist_files() 
     except NameError:
         pass
 
@@ -711,15 +705,15 @@ def check_and_convert_cap_files():
             essidlist = os.path.join(handshakes_dir, f"essidlist_{int(time.time())}.txt")
             
             conversion_cmd = [
-                'hcxpcapngtool', 
-                '-o', hc22000_file, 
-                '-E', essidlist, 
+                'hcxpcapngtool',
+                '-o', hc22000_file,
+                '-E', essidlist,
                 cap_file
             ]
             
             subprocess.run(conversion_cmd, capture_output=True)
             processed_cap_files.append(cap_file)
-            
+
             if os.path.exists(hc22000_file) and os.path.getsize(hc22000_file) > 0:
                 if os.path.exists(essidlist):
                     with open(essidlist, 'r') as f:
@@ -732,19 +726,25 @@ def check_and_convert_cap_files():
                         
                         dest_hc22000 = os.path.join(network_dir, hc22000_file)
                         shutil.move(hc22000_file, dest_hc22000)
-                
-                if os.path.exists(essidlist):
-                    os.remove(essidlist)
-        
+                        
+                        dest_cap = os.path.join(network_dir, cap_file)
+                        shutil.move(cap_file, dest_cap)
+                        
+                    if os.path.exists(essidlist):
+                        os.remove(essidlist)
+
         except Exception as e:
             print(f"Error processing {cap_file}: {e}")
+
+    existing_hc22000_files = find_files_in_directory(handshakes_dir, ['.hc22000'])
+    existing_cap_files = find_files_in_directory(handshakes_dir, ['.cap'])
     
-    existing_hc22000_files = find_hc22000_files(handshakes_dir)
-    return existing_hc22000_files, processed_cap_files
+    return existing_hc22000_files, existing_cap_files, processed_cap_files
 
 def auto_convert_latest_cap_file():
     """
     Automatically convert the most recent .cap file to hc22000 format without user input
+    Moves both .cap and .hc22000 files to network-specific directories
     
     Returns:
     - Path to the generated hc22000 file
@@ -757,34 +757,33 @@ def auto_convert_latest_cap_file():
         cap_files = [f for f in os.listdir('.') if f.endswith('.cap')]
         if not cap_files:
             return None
-        
         latest_cap_file = max(
-            cap_files, 
+            cap_files,
             key=lambda f: os.path.getmtime(f)
         )
         return latest_cap_file
 
     handshakes_dir = "handshakes"
     os.makedirs(handshakes_dir, exist_ok=True)
-
+    
     cap_file = find_latest_cap_file()
     if not cap_file:
         return None, None
-
+    
     try:
         base_name = os.path.splitext(cap_file)[0]
         hc22000_file = f"{base_name}.hc22000"
         essidlist = os.path.join(handshakes_dir, f"essidlist_{int(time.time())}.txt")
-
+        
         conversion_cmd = [
             'hcxpcapngtool',
             '-o', hc22000_file,
             '-E', essidlist,
             cap_file
         ]
-
+        
         subprocess.run(conversion_cmd, capture_output=True, check=True)
-
+        
         if os.path.exists(hc22000_file) and os.path.getsize(hc22000_file) > 0:
             if os.path.exists(essidlist):
                 with open(essidlist, 'r') as f:
@@ -792,22 +791,26 @@ def auto_convert_latest_cap_file():
                 
                 for essid in essids:
                     safe_essid = "".join(
-                        c if c.isalnum() or c in ['-', '_'] else '_' 
+                        c if c.isalnum() or c in ['-', '_'] else '_'
                         for c in essid
                     )
-                    
                     network_dir = os.path.join(handshakes_dir, safe_essid)
                     os.makedirs(network_dir, exist_ok=True)
                     
                     dest_hc22000 = os.path.join(network_dir, os.path.basename(hc22000_file))
                     shutil.move(hc22000_file, dest_hc22000)
+                    
+                    dest_cap = os.path.join(network_dir, os.path.basename(cap_file))
+                    shutil.move(cap_file, dest_cap)
+                    
                     hc22000_file = dest_hc22000
-
+                    cap_file = dest_cap
+            
             if os.path.exists(essidlist):
                 os.remove(essidlist)
-
-        return hc22000_file, cap_file
-
+            
+            return hc22000_file, cap_file
+    
     except Exception as e:
         print(f"Error converting {cap_file}: {e}")
         return None, None

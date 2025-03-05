@@ -418,5 +418,5 @@ dist/
 # Security
 selected_network.txt
 interface_config.txt
-eapol-*.txt
+eapol-*
 handshakes/

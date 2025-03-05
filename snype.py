@@ -89,26 +89,35 @@ def main():
                 print(colored("Exiting snype...", 'yellow'))
                 sys.exit(0)
             elif user_option == "4":
+                try:
+                    subprocess.run(["python3", "wordlist_crack.py"], 
+                        check=True, 
+                        capture_output=False)
+                except KeyboardInterrupt:
+                    print(colored("\n[*] Operation cancelled by user.", 'yellow'))
+                    input("Press Enter to return to the menu...")
+                clear_screen()
+            elif user_option == "5":
                 clear_screen()  
                 flush_services()
-            elif user_option == "5":
+            elif user_option == "6":
                 bssid = scan_networks_and_select_bssid(iface1)
                 clear_screen() 
-            elif user_option == "6":
+            elif user_option == "7":
                 clear_screen()  
                 iface1, iface2 = define_ifaces()
-            elif user_option == "7":
+            elif user_option == "8":
                 clear_config_files()
                 iface1, iface2 = None, None
                 bssid = None
                 clear_screen() 
-            elif user_option == "8":
+            elif user_option == "9":
                 convert_eapol()
                 clear_screen() 
-            elif user_option == "9":
+            elif user_option == "10":
                 delete_cap_files()
                 clear_screen() 
-            elif user_option == "10":
+            elif user_option == "11":
                 delete_essidlist_files()
                 clear_screen()  
             elif user_option in ["1", "2"]:
