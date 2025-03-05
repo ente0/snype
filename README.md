@@ -97,6 +97,9 @@ python snype.py
 
 # Direct deauthentication attack
 python deauth_attack.py
+
+# Wordlist attack
+python wordlist_crack.py
 ```
 <!--
 ## 🎬 Demo
