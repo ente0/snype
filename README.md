@@ -89,35 +89,75 @@ sudo pacman -S aircrack-ng python python-pip python-termcolor hcxtools hcxdumpto
 4. **Deauthentication**: Force clients to reconnect to capture handshakes
 5. **Cracking**: Use wordlist to attempt password recovery
 
-### Command Examples
+## 🎬 Walkthrough
 
-```bash
-# Start the tool
-python snype.py
+### Step-by-Step Usage Guide
 
-# When prompted, select:
-# 1. Network Scanning
-# 2. Monitor Target Traffic
-# 3. Deauthentication Attack
-# 4. Wordlist Cracking
-```
-
-### Wordlist Cracking
-
-The fourth menu option allows you to:
-- Select a previously captured handshake
-- Choose a wordlist
-- Attempt password recovery using aircrack-ng
-
-Ensure you have:
-- Valid .cap handshake capture file
-- Prepared wordlist file
-<!--
-## 🎬 Demo
--->
+#### 1. Interface Configuration
 <p align="center">
-  <video src="" />
+  <img src="https://github.com/user-attachments/assets/dd9cf807-412a-457c-9e71-82c090e36402" alt="Interface Configuration">
 </p>
+- Select and configure wireless interfaces for monitoring and injection
+- Activate monitor mode for your wireless adapter
+
+#### 2. Network Scanning
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/15c3c3ce-1fb6-43ea-b4ae-331e9f088633" alt="Network Scanning">
+</p>
+- Initiate network reconnaissance
+- Discover available wireless networks
+- View detailed network information
+
+#### 3. Target Selection
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/3c3f7f07-bdc7-48d0-a608-680d755f47ea" alt="Access Point Selection">
+</p>
+- Choose specific target network
+- View network details and client information
+
+#### 4. Detailed Target Information
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/34224c95-4fab-4549-9807-d2118590ab04" alt="Target Details">
+</p>
+- Analyze selected network's characteristics
+- Prepare for targeted monitoring and attacks
+
+#### 5. Deauthentication Setup
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/8b813b9c-2bc1-4179-968b-99ac2c7ffc52" alt="Deauthentication Process">
+</p>
+- Dual-terminal approach for monitoring and injection
+- Carefully orchestrate client disconnection
+- Capture WPA handshake
+
+#### 6. Handshake Capture
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/44a1eed7-ac8a-403a-bb41-92c92988508a" alt="Handshake Capture">
+</p>
+- Successfully capture WPA handshake
+- Generate compatible files for:
+  - Hashcat (.hc22000)
+  - Aircrack-ng (.cap)
+
+#### 7. Cracking Preparation
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/dded9dbb-9895-481e-8ecb-364ad28ca4b5" alt="Cracking Preparation">
+</p>
+- Review captured handshake files
+- Prepare for password recovery
+
+#### 8. Wordlist Cracking
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/8b913b95-4fab-4549-9807-d2118590ab04" alt="Wordlist Cracking">
+</p>
+- Select appropriate wordlist
+- Initiate password recovery process
+- View cracking progress and results
+
+### 🔍 Pro Tips
+- Always use in controlled, authorized environments
+- Ensure you have explicit permission
+- Respect legal and ethical boundaries
 
 ## 🧰 Advanced Usage
 
@@ -127,9 +167,45 @@ Ensure you have:
 - **Active Deauthentication**: Force client reconnections to capture handshakes quickly
 - **Targeted Deauthentication**: Focus on specific high-value clients
 
-<!--
-### Integration with hashCrack
--->
+## 🔓 Recommended Password Recovery: hashCrack
+
+### Why Use hashCrack?
+
+For advanced password cracking capabilities, we highly recommend integrating Snype with [hashCrack](https://github.com/ente0/hashCrack), a companion tool designed to enhance your password recovery workflow.
+
+#### Key Features of hashCrack
+- Advanced hashcat wrapper
+- Multiple cracking strategies
+- Extensive wordlist management
+- Automated cracking profiles
+- Support for various hash types
+
+### Seamless Workflow Integration
+
+1. **Capture Handshake with Snype**
+   - Use Snype to capture WPA handshakes
+   - Generate .hc22000 or .cap files
+
+2. **Crack with hashCrack**
+   ```bash
+   # Direct integration
+   hashcrack captured_handshake.hc22000
+   ```
+
+### Benefits
+- Faster cracking performance
+- More sophisticated attack modes
+- Comprehensive wordlist handling
+- Simplified cracking process
+
+<p align="center">
+  <a href="https://github.com/ente0/hashCrack">
+    <img src="https://img.shields.io/badge/Check%20out-hashCrack-blue?style=for-the-badge&logo=github" alt="hashCrack Repository">
+  </a>
+</p>
+
+> [!NOTE]
+> Always ensure you have proper authorization before attempting any password recovery.
 
 
 ## 🔍 Troubleshooting
