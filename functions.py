@@ -249,7 +249,7 @@ def show_menu2():
     print(colored(separator, 'cyan'))
 
     options = [
-        f"{colored('►', 'green', attrs=['bold'])} {colored('[1]', 'cyan', attrs=['bold'])} General Reconnaissance",
+        f"{colored('►', 'green', attrs=['bold'])} {colored('[1]', 'cyan', attrs=['bold'])} Network Scanning",
         f"{colored('►', 'green', attrs=['bold'])} {colored('[2]', 'cyan', attrs=['bold'])} Monitor Target Traffic",
         f"{colored('►', 'green', attrs=['bold'])} {colored('[3]', 'cyan', attrs=['bold'])} Deauthentication Attack",
         f"{colored('►', 'green', attrs=['bold'])} {colored('[4]', 'cyan', attrs=['bold'])} Wordlist Cracking",

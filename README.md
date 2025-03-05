@@ -87,7 +87,7 @@ sudo pacman -S aircrack-ng python python-pip python-termcolor hcxtools hcxdumpto
 2. **Target Selection**: Choose a network to monitor
 3. **Monitoring**: Capture packets including handshakes
 4. **Deauthentication**: Force clients to reconnect to capture handshakes
-5. **Extraction**: Save captured handshakes for later analysis
+5. **Cracking**: Use wordlist to attempt password recovery
 
 ### Command Examples
 
@@ -95,12 +95,23 @@ sudo pacman -S aircrack-ng python python-pip python-termcolor hcxtools hcxdumpto
 # Start the tool
 python snype.py
 
-# Direct deauthentication attack
-python deauth_attack.py
-
-# Wordlist attack
-python wordlist_crack.py
+# When prompted, select:
+# 1. Network Scanning
+# 2. Monitor Target Traffic
+# 3. Deauthentication Attack
+# 4. Wordlist Cracking
 ```
+
+### Wordlist Cracking
+
+The fourth menu option allows you to:
+- Select a previously captured handshake
+- Choose a wordlist
+- Attempt password recovery using aircrack-ng
+
+Ensure you have:
+- Valid .cap handshake capture file
+- Prepared wordlist file
 <!--
 ## 🎬 Demo
 -->
