@@ -6,7 +6,7 @@
 <p align="center">
   <img src="https://img.shields.io/github/license/ente0/snype">
   <img src="https://img.shields.io/badge/language-python-green" alt="Language: Python">
-  <img src="https://img.shields.io/badge/dependencies-aircrack--ng-green" alt="Dependencies">
+  <img src="https://img.shields.io/badge/dependencies-python--hcxtools--hcxdumptool--aircrack--ng-green" alt="Dependencies">
   <a href="https://github.com/ente0/snype/releases">
     <img src="https://img.shields.io/badge/release-v1.0.0-blue" alt="Version">
   </a>
