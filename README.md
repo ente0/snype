@@ -110,36 +110,36 @@ sudo pacman -S aircrack-ng python python-pip python-termcolor hcxtools hcxdumpto
 </p>
 
 
-#### 3. Target Selection
+#### 3. Detailed Target Information
 - Choose specific target network
 - View network details and client information
+- Analyze selected network's characteristics
+- Prepare for targeted monitoring and attacks
 <p align="center">
   <img src="https://github.com/user-attachments/assets/6c6e4d32-755a-438c-a2f7-f038d10b7286" alt="Access Point Selection">
 </p>
 
-
-#### 4. Detailed Target Information
-- Analyze selected network's characteristics
-- Prepare for targeted monitoring and attacks
+#### 4. Deauthentication Setup
+- Dual-terminal approach for monitoring and injection
+- Carefully orchestrate client disconnection
+- Capture WPA handshake
 <p align="center">
   <img src="https://github.com/user-attachments/assets/34224c95-4fab-4549-9807-d2118590ab04" alt="Target Details">
 </p>
 
 
-#### 5. Deauthentication Setup
-- Dual-terminal approach for monitoring and injection
-- Carefully orchestrate client disconnection
-- Capture WPA handshake
+#### 5. Handshake Capture
+- Successfully capture WPA handshake
+- Generate compatible files for:
+  - Hashcat (.hc22000)
+  - Aircrack-ng (.cap)
 <p align="center">
   <img src="https://github.com/user-attachments/assets/8b813b9c-2bc1-4179-968b-99ac2c7ffc52" alt="Deauthentication Process">
 </p>
 
 
-#### 6. Handshake Capture
-- Successfully capture WPA handshake
-- Generate compatible files for:
-  - Hashcat (.hc22000)
-  - Aircrack-ng (.cap)
+#### 6. 
+
 <p align="center">
   <img src="https://github.com/user-attachments/assets/220f5001-13f3-4c7f-b215-f22d2002c418" alt="Handshake Capture">
 </p>
