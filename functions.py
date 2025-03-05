@@ -249,24 +249,29 @@ def show_menu2():
     print(colored(separator, 'cyan'))
 
     options = [
-        f"{colored('[1]', 'cyan', attrs=['bold'])} General reconnaissance",
-        f"{colored('[2]', 'cyan', attrs=['bold'])} Watch target traffic",
-        f"{colored('[3]', 'cyan', attrs=['bold'])} Deauthentication attack",
-        f"{colored('[4]', 'cyan', attrs=['bold'])} Wordlist cracking",
-
+        f"{colored('►', 'green', attrs=['bold'])} {colored('[1]', 'cyan', attrs=['bold'])} General Reconnaissance",
+        f"{colored('►', 'green', attrs=['bold'])} {colored('[2]', 'cyan', attrs=['bold'])} Monitor Target Traffic",
+        f"{colored('►', 'green', attrs=['bold'])} {colored('[3]', 'cyan', attrs=['bold'])} Deauthentication Attack",
+        f"{colored('►', 'green', attrs=['bold'])} {colored('[4]', 'cyan', attrs=['bold'])} Wordlist Cracking",
     ]
-    print("\n   " + "\n   ".join(options))
 
-    print(colored(dash_separator, 'cyan')) 
+    utility_options = [
+        f"{colored('[5]', 'magenta', attrs=['bold'])} Flush Services",
+        f"{colored('[6]', 'magenta', attrs=['bold'])} Change Target BSSID",
+        f"{colored('[7]', 'magenta', attrs=['bold'])} Modify Interfaces",
+        f"{colored('[8]', 'magenta', attrs=['bold'])} Clear Configuration",
+        f"{colored('[9]', 'magenta', attrs=['bold'])} Convert EAPOL to hc22000",
+        f"{colored('[10]', 'magenta', attrs=['bold'])} Delete Capture Files",
+        f"{colored('[11]', 'magenta', attrs=['bold'])} Clear ESSID Lists",
+    ]
 
-    print(f"{colored('   [5]', 'magenta', attrs=['bold'])}  Flush services     ")
-    print(f"{colored('   [6]', 'magenta', attrs=['bold'])}  Change target BSSID")
-    print(f"{colored('   [7]', 'magenta', attrs=['bold'])}  Change interfaces  ")
-    print(f"{colored('   [8]', 'magenta', attrs=['bold'])}  Clear config files ")
-    print(f"{colored('   [9]', 'magenta', attrs=['bold'])}  Convert EAPOL to hc22000 ")
-    print(f"{colored('   [10]', 'magenta', attrs=['bold'])}  Delete capture files ")
-    print(f"{colored('   [11]', 'magenta', attrs=['bold'])} Delete essidlist files ")
 
+    print(colored("\n ATTACK MODULES:", 'blue', attrs=['bold']))
+    print("\n " + "\n ".join(options))
+    print("\n" + colored(dash_separator, 'cyan'))
+    print(colored("\n UTILITY FUNCTIONS:", 'magenta', attrs=['bold']))
+    print("\n " + "\n ".join(utility_options))
+    
     print(colored("\n" + separator, 'magenta'))
 
     user_option2 = input(colored("\nEnter option (1-11, Q to quit): ", 'cyan', attrs=['bold'])).strip().lower()
@@ -816,163 +821,119 @@ def auto_convert_latest_cap_file():
         return None, None
 
 def convert_eapol():
-    """Convert captured EAPOL packets to hashcat compatible formats (hc22000 or hccapx)"""
-    print(colored("[+] Converting EAPOL packets to hashcat format...", 'yellow'))
+    """Convert EAPOL packets to hashcat format with graceful interrupt handling"""
+    print(colored("[+] Converting EAPOL packets to hashcat format...", "yellow"))
+    
     try:
-        choice = input(colored("Convert (1) single file, (2) multiple files, or (3) all .cap files in a directory? [1/2/3]: ", 'cyan'))
+        cap_files = [f for f in os.listdir('.') if f.endswith('.cap')]
+        handshakes_dir = "handshakes"
         
-        files_to_convert = []
-        
-        if choice == "1":
-            cap_file = input(colored("Enter the path to the .cap file: ", 'cyan'))
-            if not os.path.exists(cap_file):
-                print(colored(f"[!] File {cap_file} not found!", 'red'))
-                time.sleep(2)
-                return
-            files_to_convert.append(cap_file)
-            
-        elif choice == "2":
-            while True:
-                cap_file = input(colored("Enter the path to a .cap file (or leave empty to finish): ", 'cyan'))
-                if not cap_file:
-                    break
-                    
-                if not os.path.exists(cap_file):
-                    print(colored(f"[!] File {cap_file} not found!", 'red'))
-                    continue
-                    
-                files_to_convert.append(cap_file)
-                
-            if not files_to_convert:
-                print(colored("[!] No files selected for conversion.", 'red'))
-                time.sleep(2)
-                return
-                
-        elif choice == "3":
-            directory = input(colored("Enter the directory path containing .cap files: ", 'cyan'))
-            if not os.path.isdir(directory):
-                print(colored(f"[!] Directory {directory} not found!", 'red'))
-                time.sleep(2)
-                return
-                
-            cap_files = [os.path.join(directory, f) for f in os.listdir(directory) if f.endswith('.cap')]
-            if not cap_files:
-                print(colored(f"[!] No .cap files found in {directory}!", 'red'))
-                time.sleep(2)
-                return
-                
-            files_to_convert.extend(cap_files)
-            
-        else:
-            print(colored("[!] Invalid choice!", 'red'))
+        if not cap_files:
+            print(colored("[!] No .cap files found in the current directory.", "red"))
             time.sleep(2)
             return
-            
-        format_choice = input(colored("Convert to (1) HC22000 (recommended) or (2) HCCAPX format? [1/2]: ", 'cyan') or "1")
         
-        successful = 0
-        failed = 0
+        print(colored("Convert:", "cyan"))
+        print("(1) Single file")
+        print("(2) Multiple files")
+        print("(3) All .cap files in directory")
         
-        handshakes_dir = "handshakes"
-        if not os.path.exists(handshakes_dir):
-            os.makedirs(handshakes_dir)
-            print(colored(f"[+] Created main directory: {handshakes_dir}", 'green'))
-            
-        essidlists = []
-        if format_choice == "1":
-            essidlists = []
-            
-        for cap_file in files_to_convert:
+        while True:
             try:
-                if format_choice == "1":
-                    output_file = os.path.splitext(cap_file)[0] + ".hc22000"
-                    current_essidlist = os.path.join(handshakes_dir, f"essidlist_{int(time.time())}.txt")
-                    essidlists.append(current_essidlist)
-                    
-                    print(colored(f"[-] Converting {cap_file} to {output_file} (HC22000 format)...", 'yellow'))
-                    
-                    result = subprocess.run(
-                        ["hcxpcapngtool", "-o", output_file, "-E", current_essidlist, cap_file],
-                        capture_output=True, 
-                        text=True
-                    )
-                    
-                    if os.path.exists(output_file) and os.path.getsize(output_file) > 0:
-                        print(colored(f"[✓] Successfully converted to {output_file}", 'green'))
-                        successful += 1
-                    else:
-                        print(colored(f"[!] Conversion failed for {cap_file}. Check if file contains handshakes.", 'red'))
-                        failed += 1
-                        
-                else:
-                    output_file = os.path.splitext(cap_file)[0] + ".hccapx"
-                    print(colored(f"[-] Converting {cap_file} to {output_file} (HCCAPX format)...", 'yellow'))
-                    
-                    result = subprocess.run(
-                        ["cap2hccapx", cap_file, output_file],
-                        capture_output=True, 
-                        text=True
-                    )
-                    
-                    if "written" in result.stdout.lower() or (os.path.exists(output_file) and os.path.getsize(output_file) > 0):
-                        print(colored(f"[✓] Successfully converted to {output_file}", 'green'))
-                        successful += 1
-                    else:
-                        print(colored(f"[!] Conversion failed for {cap_file}. Check if file contains handshakes.", 'red'))
-                        failed += 1
-                        
-            except Exception as e:
-                print(colored(f"[!] Error converting {cap_file}: {e}", 'red'))
-                failed += 1
+                choice = input(colored("Enter option (1/2/3, Q to quit): ", "green")).strip().lower()
+                
+                if choice == 'q':
+                    return
+                
+                choice = int(choice)
+                
+                if choice not in [1, 2, 3]:
+                    print(colored("[!] Invalid option. Please choose 1, 2, or 3.", "red"))
+                    continue
+                
+                break
+            except ValueError:
+                print(colored("[!] Please enter a valid number.", "red"))
         
-        if format_choice == "1" and successful > 0:
-            for current_essidlist in essidlists:
-                if os.path.exists(current_essidlist):
-                    try:
-                        with open(current_essidlist, 'r') as f:
-                            essids = [line.strip() for line in f if line.strip()]
-                        
-                        for essid in essids:
-                            safe_essid = "".join(c if c.isalnum() or c in ['-', '_'] else '_' for c in essid)
-                            network_dir = os.path.join(handshakes_dir, safe_essid)
-                            
-                            if not os.path.exists(network_dir):
-                                os.makedirs(network_dir)
-                            
-                            for file in os.listdir('.'):
-                                if file.endswith('.hc22000'):
-                                    try:
-                                        with open(file, 'r') as f:
-                                            if any(essid in line for line in f):
-                                                dest_path = os.path.join(network_dir, file)
-                                                shutil.move(file, dest_path)
-                                    except Exception:
-                                        pass
-                        
-                        os.remove(current_essidlist)
-                    except Exception:
-                        pass
-        
-        hc22000_files, _ = check_and_convert_cap_files()
-        
-        if hc22000_files:
-            print(colored(f"\n[✓] File hc22000 generati in totale: {len(hc22000_files)}", 'green'))
-            for file in hc22000_files:
-                print(colored(f"       - {file}", 'green'))
-        else:
-            print(colored("\n[!] Nessun file hc22000 trovato.", 'yellow'))
-        
-        print(colored(f"\n[+] Conversion complete: {successful} successful, {failed} failed", 'yellow'))
+        if choice == 1:
+            print(colored("\nAvailable .cap files:", "yellow"))
+            for idx, file in enumerate(cap_files, 1):
+                print(f"{idx}. {file}")
             
-        if failed > 0:
-            print(colored("\n[!] Note: If conversions failed, make sure the appropriate tools are installed:", 'yellow'))
-            print(colored("    • For HC22000 format: apt-get install hcxtools", 'yellow'))
-            print(colored("    • For HCCAPX format: apt-get install hashcat-utils", 'yellow'))
+            while True:
+                try:
+                    file_choice = input(colored("Select file number (Q to quit): ", "cyan")).strip().lower()
+                    
+                    if file_choice == 'q':
+                        return
+                    
+                    file_choice = int(file_choice)
+                    
+                    if 1 <= file_choice <= len(cap_files):
+                        selected_file = cap_files[file_choice - 1]
+                        cap_files = [selected_file]
+                        break
+                    else:
+                        print(colored("[!] Invalid file number.", "red"))
+                except ValueError:
+                    print(colored("[!] Please enter a valid number.", "red"))
+        
+        elif choice == 2:
+            print(colored("\nAvailable .cap files:", "yellow"))
+            for idx, file in enumerate(cap_files, 1):
+                print(f"{idx}. {file}")
             
+            selected_files = []
+            while True:
+                try:
+                    files_choice = input(colored("Enter file numbers separated by comma (Q to quit): ", "cyan")).strip().lower()
+                    
+                    if files_choice == 'q':
+                        return
+                    
+                    selected_indices = [int(x.strip()) for x in files_choice.split(',')]
+                    
+                    if all(1 <= idx <= len(cap_files) for idx in selected_indices):
+                        selected_files = [cap_files[idx-1] for idx in selected_indices]
+                        cap_files = selected_files
+                        break
+                    else:
+                        print(colored("[!] Invalid file numbers.", "red"))
+                except ValueError:
+                    print(colored("[!] Please enter valid numbers.", "red"))
+        
+        os.makedirs(handshakes_dir, exist_ok=True)
+        
+        for cap_file in cap_files:
+            try:
+                base_name = os.path.splitext(cap_file)[0]
+                hc22000_file = os.path.join(handshakes_dir, f"{base_name}.hc22000")
+                essidlist = os.path.join(handshakes_dir, f"essidlist_{int(time.time())}.txt")
+                
+                conversion_cmd = [
+                    'hcxpcapngtool',
+                    '-o', hc22000_file,
+                    '-E', essidlist,
+                    cap_file
+                ]
+                
+                print(colored(f"\n[*] Converting {cap_file}...", "green"))
+                subprocess.run(conversion_cmd, check=True, capture_output=True)
+                
+                print(colored(f"[+] Converted {cap_file} successfully!", "green"))
+            
+            except subprocess.CalledProcessError as e:
+                print(colored(f"[!] Error converting {cap_file}: {e}", "red"))
+        
+        print(colored("\n[+] Conversion completed!", "green"))
         time.sleep(2)
-        
+    
+    except KeyboardInterrupt:
+        print(colored("\n[*] Conversion process interrupted.", "yellow"))
+        time.sleep(2)
+    
     except Exception as e:
-        print(colored(f"[!] Error during conversion: {e}", 'red'))
+        print(colored(f"[!] An unexpected error occurred: {e}", "red"))
         time.sleep(2)
 
 def cleanup_essidlist_files():

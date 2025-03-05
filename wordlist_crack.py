@@ -87,18 +87,51 @@ class WifiCrackingTool:
                 self.logger.warning(colored("[!] Please enter a valid number.", "red"))
     
     def get_wordlist(self):
-        """Prompts the user to enter the wordlist path"""
+        """Prompts the user to enter the wordlist path with a default location"""
+        default_dir = "/usr/share/wordlists"
+        
         while True:
-            wordlist = input(colored("\n[?] Enter the wordlist path (or 'q' to quit): ", "cyan")).strip()
+            print(colored("\n[?] Select wordlist directory", "cyan"))
+            print(f"Default: {default_dir}")
+            dir_input = input(colored("Enter directory path (or press Enter for default): ", "green")).strip()
             
-            if wordlist.lower() == 'q':
-                return None
+            wordlist_dir = dir_input if dir_input else default_dir
             
-            if os.path.exists(wordlist):
-                return wordlist
-            else:
-                self.logger.warning(colored("[!] Wordlist not found! Try again.", "red"))
-
+            if not os.path.isdir(wordlist_dir):
+                self.logger.warning(colored(f"[!] Directory {wordlist_dir} not found! Try again.", "red"))
+                continue
+            
+            wordlist_files = [
+                f for f in os.listdir(wordlist_dir) 
+                if os.path.isfile(os.path.join(wordlist_dir, f)) 
+                and (f.endswith('.txt') or f.endswith('.lst'))
+            ]
+            
+            if not wordlist_files:
+                self.logger.warning(colored("[!] No wordlist files found in this directory!", "red"))
+                continue
+            
+            print(colored("\nAvailable Wordlists:", "yellow"))
+            for idx, file in enumerate(wordlist_files, 1):
+                print(f"{idx}. {file}")
+            
+            while True:
+                file_choice = input(colored("\n[?] Choose a wordlist (number) or 'q' to quit: ", "cyan")).strip()
+                
+                if file_choice.lower() == 'q':
+                    return None
+                
+                try:
+                    choice_num = int(file_choice)
+                    if 1 <= choice_num <= len(wordlist_files):
+                        selected_file = wordlist_files[choice_num - 1]
+                        full_path = os.path.join(wordlist_dir, selected_file)
+                        return full_path
+                    else:
+                        self.logger.warning(colored("[!] Invalid number. Try again.", "red"))
+                except ValueError:
+                    self.logger.warning(colored("[!] Please enter a valid number.", "red"))
+    
     def crack_wifi(self, cap_file, wordlist):
         processo = None
         try:
@@ -112,6 +145,11 @@ class WifiCrackingTool:
             
             print(colored(f"[INFO] Starting Aircrack-ng\nCapture file: {cap_file}\nWordlist: {wordlist}", "yellow"))
             
+            print(colored("\n[*] Cracking will start in:", "green"))
+            for i in range(2, 0, -1):
+                print(colored(f"{i}...", "cyan"))
+                time.sleep(1)
+            
             cmd = [
                 "aircrack-ng",
                 "-w", wordlist,   
@@ -122,7 +160,6 @@ class WifiCrackingTool:
             print(colored("[+] Executing command: " + " ".join(cmd), "green"))
             print(colored("[*] Press Ctrl+C to interrupt the cracking process", "yellow"))
             
-            # Disable SIGINT handling in the parent process during subprocess execution
             original_sigint = signal.signal(signal.SIGINT, signal.SIG_IGN)
             
             processo = subprocess.Popen(
@@ -133,7 +170,6 @@ class WifiCrackingTool:
                 preexec_fn=os.setsid
             )
             
-            # Restore original SIGINT handler
             signal.signal(signal.SIGINT, original_sigint)
             
             try:
@@ -144,7 +180,6 @@ class WifiCrackingTool:
                     if output:
                         print(output.strip())
             except KeyboardInterrupt:
-                print(colored("\n[*] Cracking process interrupted by user.", "yellow"))
                 time.sleep(2)
                 return False
             
