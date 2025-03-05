@@ -184,7 +184,7 @@ For advanced password cracking capabilities, we highly recommend integrating Sny
 
 1. **Capture Handshake with Snype**
    - Use Snype to capture WPA handshakes
-   - Generate .hc22000 or .cap files
+   - Generate .hc22000
 
 2. **Crack with hashCrack**
    ```bash
