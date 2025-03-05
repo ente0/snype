@@ -114,7 +114,7 @@ sudo pacman -S aircrack-ng python python-pip python-termcolor hcxtools hcxdumpto
 - Choose specific target network
 - View network details and client information
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/283f8310-785e-45de-b5ef-547cc7e4eb17" alt="Access Point Selection">
+  <img src="https://github.com/user-attachments/assets/6c6e4d32-755a-438c-a2f7-f038d10b7286" alt="Access Point Selection">
 </p>
 
 
@@ -141,7 +141,7 @@ sudo pacman -S aircrack-ng python python-pip python-termcolor hcxtools hcxdumpto
   - Hashcat (.hc22000)
   - Aircrack-ng (.cap)
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/44a1eed7-ac8a-403a-bb41-92c92988508a" alt="Handshake Capture">
+  <img src="https://github.com/user-attachments/assets/220f5001-13f3-4c7f-b215-f22d2002c418" alt="Handshake Capture">
 </p>
 
 
