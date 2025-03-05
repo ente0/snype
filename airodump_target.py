@@ -4,18 +4,27 @@ import time
 import os
 from termcolor import colored
 from functions import clear_screen
+import shutil
 
 def show_deauth_terminal_warning():
     """
     Display a warning message informing the user to open a new terminal for deauthentication
+    with a header that adapts to the terminal width
     """
-    warning_box_width = 70
+    import shutil
+    from termcolor import colored
+
+    try:
+        terminal_width = shutil.get_terminal_size().columns
+    except Exception:
+        terminal_width = 70  
     
-    header = "!" * warning_box_width
+    header = "!" * terminal_width
+    
     print(colored(header, 'yellow'))
     
     title = "IMPORTANT WARNING"
-    padding = " " * ((warning_box_width - len(title)) // 2)
+    padding = " " * ((terminal_width - len(title)) // 2)
     print(colored(f"{padding}{title}", 'yellow', attrs=['bold']))
     
     print(colored(header, 'yellow'))

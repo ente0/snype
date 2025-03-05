@@ -7,6 +7,7 @@ from termcolor import colored
 from functions import (
     get_saved_interface_info, get_saved_network_info, check_and_convert_cap_files
 )
+import shutil
 
 def deauth_attack(interface, ap, target=None, duration=10):
     
@@ -48,10 +49,15 @@ def deauth_attack(interface, ap, target=None, duration=10):
             
         cmd.append(interface)
         
+        try:
+            terminal_width = shutil.get_terminal_size().columns
+        except Exception:
+            terminal_width = 60
+
         print(colored(f"\n[+] Executing: {' '.join(cmd)}", 'yellow'))
         print(colored(f"[+] Attack will run for {duration} seconds...", 'yellow'))
         print(colored(f"[+] Displaying aireplay-ng output in real-time...", 'yellow'))
-        print(colored("-" * 60, 'blue'))
+        print(colored("-" * terminal_width, 'blue'))
         
         subprocess.run(["sudo", "-v"])
         
