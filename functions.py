@@ -309,7 +309,6 @@ def load_found_passwords():
             with open("found_passwords.txt", "r") as f:
                 for line in f:
                     try:
-                        # Try to parse as JSON first (new format)
                         data = json.loads(line.strip())
                         passwords[data['ssid']] = {
                             'password': data['password'],
