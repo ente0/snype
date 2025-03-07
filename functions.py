@@ -354,7 +354,6 @@ def save_password(network_ssid, password, cap_file):
       
         timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
         
-        # Update found_passwords dictionary
         found_passwords[network_ssid] = {
             "password": password,
             "capture_file": cap_file,
@@ -376,7 +375,6 @@ def save_password(network_ssid, password, cap_file):
         
         print(colored(f"[+] Password saved to {password_file}", "green"))
         
-        # Save to master file in JSON format
         master_file = "found_passwords.txt"
         password_data = {
             "ssid": network_ssid,
