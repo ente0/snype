@@ -261,3 +261,6 @@ This project is licensed under the GPL-3.0 - see the LICENSE file for details.
 - [wpa2-wordlists](https://github.com/kennyn510/wpa2-wordlists)
 - [paroleitaliane](https://github.com/napolux/paroleitaliane)
 - [SecLists](https://github.com/danielmiessler/SecLists)
+
+> [!IMPORTANT]
+> Always use these resources and tools responsibly and ethically. Respect legal and privacy boundaries.
