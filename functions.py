@@ -318,7 +318,6 @@ def load_found_passwords():
                             'date_cracked': data.get('date_cracked', '')
                         }
                     except json.JSONDecodeError:
-                        # Fall back to old format (ssid:password)
                         parts = line.strip().split(':', 1)
                         if len(parts) == 2:
                             ssid, password = parts
