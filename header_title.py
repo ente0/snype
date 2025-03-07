@@ -45,7 +45,7 @@ def show_menu1():
         for file in cap_files:
             print(colored(f" - {file}", 'green'))
     
-    found_passwords = load_found_passwords()
+    found_passwords, file_exists = load_found_passwords()
     if found_passwords:
         print(colored(f" [✓] {len(found_passwords)} network password(s) found:", 'green', attrs=['bold']))
         for ssid, data in found_passwords.items():

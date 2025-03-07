@@ -101,9 +101,10 @@ def main():
                     input("Press Enter to return to the menu...")
                 clear_screen()
             elif user_option == "5":
-                clear_screen() 
+                clear_screen()
                 view_saved_passwords()
-                clear_screen()  
+                input("\nPress Enter to return to the menu...")
+                clear_screen()
             elif user_option == "6":
                 clear_screen()  
                 flush_services()

@@ -129,9 +129,14 @@ class WifiCrackingTool:
                 print(f"{colored(f'[{idx}]', 'yellow')} {file}")
             
             try:
-                file_choice = input(colored("\n[?] Choose a wordlist (number) or 'q' to quit: ", "cyan")).strip()
-                
-                if file_choice.lower() == 'q':
+                default_wordlist="rockyou.txt"
+                file_choice = input(colored("\n[?] Choose a wordlist (number) or press Enter for default (rockyou.txt): ", "cyan")).strip()
+
+                if not file_choice:
+                    if default_wordlist in wordlist_files:
+                        return os.path.join(wordlist_dir, default_wordlist)
+                else:
+                    print(colored(f"[!] Default wordlist '{default_wordlist}' not found!", "red"))
                     return None
                 
                 try:

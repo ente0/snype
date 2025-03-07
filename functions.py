@@ -236,9 +236,12 @@ def show_menu2():
 def load_found_passwords():
     """Load found passwords from the master file"""
     passwords = {}
+    file_exists = False
+    
     try:
         import json
         if os.path.exists("found_passwords.txt"):
+            file_exists = True
             with open("found_passwords.txt", "r") as f:
                 for line in f:
                     try:
@@ -256,6 +259,7 @@ def load_found_passwords():
                             passwords[ssid] = {'password': password}
     except Exception as e:
         print(colored(f"[!] Error loading passwords: {e}", "red"))
+    
     return passwords
 
 def save_password(network_ssid, password, cap_file):
@@ -324,15 +328,20 @@ def save_password(network_ssid, password, cap_file):
 def view_saved_passwords():
     """Display detailed information about saved passwords"""
     found_passwords = load_found_passwords()
+    file_exists = os.path.exists("found_passwords.txt")
     
+    if not file_exists:
+        print(colored("[!] Password file doesn't exist.", "yellow"))
+        return {}, False
+        
     if not found_passwords:
         print(colored("[!] No saved passwords found.", "yellow"))
-        return
+        return {}, True
     
     terminal_width = shutil.get_terminal_size().columns
     separator = "=" * terminal_width
     
-    print(colored(separator, 'cyan'))
+    #print(colored(separator, 'cyan'))
     print("\n")
     print(colored(f" SAVED NETWORK PASSWORDS", 'cyan', attrs=['bold']))
     print(colored(separator, 'cyan'))
@@ -380,6 +389,8 @@ def view_saved_passwords():
             print(colored(f"[+] Passwords exported to {export_file}", "green"))
         except Exception as e:
             print(colored(f"[!] Error exporting passwords: {e}", "red"))
+    
+    return found_passwords, file_exists
 
 def get_package_script_path(script_name):
     """
