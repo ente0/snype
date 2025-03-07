@@ -150,96 +150,74 @@ def show_status_info():
     iface1, iface2 = get_saved_interface_info()
     bssid, channel, essid = get_saved_network_info()
     status = []
+    plain_status = []
     
     if iface1:
+        plain_status.append(f"Monitor: {iface1}")
         status.append(f"{colored('Monitor: ', 'white')}{colored(iface1, 'green')}")
+        
     if iface2 and iface2 != iface1:
+        plain_status.append(f"Inject: {iface2}")
         status.append(f"{colored('Inject: ', 'white')}{colored(iface2, 'green')}")
+        
     if bssid:
+        plain_target = f"Target: {bssid}"
         target_info = f"{colored('Target: ', 'white')}{colored(bssid, 'yellow')}"
+        
         if channel:
+            plain_target += f" (Ch: {channel})"
             target_info += f" {colored('(Ch: ', 'white')}{colored(channel, 'yellow')}{colored(')', 'white')}"
+            
+        plain_status.append(plain_target)
         status.append(target_info)
+        
     if essid:
+        plain_status.append(f"ESSID: {essid}")
         status.append(f"{colored('ESSID: ', 'white')}{colored(essid, 'yellow')}")
+        
+    if not status:
+        return {'colored': '', 'plain': ''}
     
-    status_text = " | ".join(status) if status else ""
+    # Join the information with colored pipes
+    if len(status) > 1:
+        colored_text = status[0]
+        for item in status[1:]:
+            colored_text += f" {colored('|', 'white')} {item}"
+    else:
+        colored_text = status[0] if status else ""
     
+    # Get the plain text version for length calculation
+    plain_text = " | ".join(plain_status)
+    
+    # Return dictionary with both versions
+    return {
+        'colored': colored_text,
+        'plain': plain_text
+    }
+
+def main_header(status_dict, color="white", separator_char="="):
+    """Prints a header with centered status information"""
     terminal_width = shutil.get_terminal_size().columns
+    separator = separator_char * terminal_width
+    print(colored(separator, color))
     
-    from re import sub
-    visible_length = len(sub(r'\x1b\[[0-9;]*m', '', status_text))
+    if status_dict:
+        if isinstance(status_dict, dict):
+            plain_text = status_dict.get('plain', '')
+            colored_text = status_dict.get('colored', '')
+            
+            # Calculate padding based on plain text
+            padding = max(0, (terminal_width - len(plain_text)) // 2)
+            centered_text = " " * padding + colored_text
+            print(centered_text)
+        else:
+            # Handle case where status_dict is a string
+            padding = max(0, (terminal_width - len(status_dict)) // 2)
+            text_line = " " * padding + status_dict
+            print(text_line)
     
-    padding = max(0, (terminal_width - visible_length) // 2)
-    
-    return " " * padding + status_text
+    print(colored(separator, color))
 
-
-
-def show_menu2():
-    from header_title import print_centered_title
-    terminal_width = shutil.get_terminal_size().columns
-    separator = "=" * terminal_width
-    dash_separator = "-" * terminal_width
-
-    print_centered_title()
-
-    print(colored(separator, 'cyan'))
-    print(colored(f" Welcome to snype!", 'cyan', attrs=['bold']))
-
-
-    hc22000_files, cap_files, processed_cap_files = check_and_convert_cap_files()
-
-    if hc22000_files:
-        print(colored(f"\n [✓] {len(hc22000_files)} .hc22000 file(s) generated:", 'green', attrs=['bold']))
-        for file in hc22000_files:
-            print(colored(f" - {file}", 'green'))
-
-    if cap_files:
-        print(colored(f" [✓] {len(cap_files)} .cap file(s) found:", 'green', attrs=['bold']))
-        for file in cap_files:
-            print(colored(f" - {file}", 'green'))
-    
-    found_passwords = load_found_passwords()
-    if found_passwords:
-        print(colored(f" [✓] {len(found_passwords)} network password(s) found:", 'green', attrs=['bold']))
-        for ssid, data in found_passwords.items():
-            if isinstance(data, dict):  
-                print(colored(f" - {ssid}: {data['password']}", 'green'))
-            else:  
-                print(colored(f" - {ssid}: {data}", 'green'))
-
-
-    status_info = show_status_info()
-    if status_info:
-        print_header(status_info,"cyan","=")
-
-    options = [
-        f"{colored('[1]', 'cyan', attrs=['bold'])} Network Scanning",
-        f"{colored('[2]', 'cyan', attrs=['bold'])} Monitor Target Traffic",
-        f"{colored('[3]', 'cyan', attrs=['bold'])} Deauthentication Attack",
-        f"{colored('[4]', 'cyan', attrs=['bold'])} Wordlist Cracking",
-    ]
-
-    utility_options = [
-        f"{colored('[5]', 'magenta', attrs=['bold'])} Flush Services",
-        f"{colored('[6]', 'magenta', attrs=['bold'])} Change Target BSSID",
-        f"{colored('[7]', 'magenta', attrs=['bold'])} Modify Interfaces",
-        f"{colored('[8]', 'magenta', attrs=['bold'])} Clear Configuration",
-        f"{colored('[9]', 'magenta', attrs=['bold'])} Convert EAPOL to hc22000",
-        f"{colored('[10]', 'magenta', attrs=['bold'])} Delete Capture Files",
-        f"{colored('[11]', 'magenta', attrs=['bold'])} Clear ESSID Lists",
-    ]
-
-    print(colored("\n ATTACK MODULES:", 'blue', attrs=['bold']))
-    print("\n " + "\n ".join(options))
-    print("\n" + colored(dash_separator, 'cyan'))
-    print(colored("\n UTILITY FUNCTIONS:", 'magenta', attrs=['bold']))
-    print("\n " + "\n ".join(utility_options))
-    print(colored("\n" + separator, 'magenta'))
-
-    user_option2 = input(colored("\nEnter option (1-12, Q to quit): ", 'cyan', attrs=['bold'])).strip().lower()
-    return user_option2
 
 def load_found_passwords():
     """Load found passwords from the master file"""
@@ -268,7 +246,7 @@ def load_found_passwords():
     except Exception as e:
         print(colored(f"[!] Error loading passwords: {e}", "red"))
     
-    return passwords
+    return passwords, file_exists
 
 def save_password(network_ssid, password, cap_file):
     """Save the found password to a file and store it in the found_passwords dictionary

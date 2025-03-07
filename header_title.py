@@ -1,6 +1,6 @@
 import shutil
 from termcolor import colored
-from functions import check_and_convert_cap_files, load_found_passwords, show_status_info, print_header
+from functions import check_and_convert_cap_files, load_found_passwords, show_status_info, print_header, main_header
 def print_snype_title():
     terminal_width = shutil.get_terminal_size().columns
     
@@ -82,7 +82,6 @@ def show_menu2():
     print(colored(separator, 'cyan'))
     print(colored(f" Welcome to snype!", 'cyan', attrs=['bold']))
 
-
     hc22000_files, cap_files, processed_cap_files = check_and_convert_cap_files()
 
     if hc22000_files:
@@ -95,19 +94,24 @@ def show_menu2():
         for file in cap_files:
             print(colored(f" - {file}", 'green'))
     
-    found_passwords = load_found_passwords()
-    if found_passwords:
-        print(colored(f" [✓] {len(found_passwords)} network password(s) found:", 'green', attrs=['bold']))
-        for ssid, data in found_passwords.items():
-            if isinstance(data, dict):  
-                print(colored(f" - {ssid}: {data['password']}", 'green'))
-            else:  
-                print(colored(f" - {ssid}: {data}", 'green'))
-
+    # Load found passwords and handle exceptions
+    try:
+        found_passwords, file_exists = load_found_passwords()
+        if found_passwords and file_exists:
+            print(colored(f" [✓] {len(found_passwords)} network password(s) found:", 'green', attrs=['bold']))
+            for ssid, data in found_passwords.items():
+                if isinstance(data, dict):  
+                    print(colored(f" - {ssid}: {data['password']}", 'green'))
+                else:  
+                    print(colored(f" - {ssid}: {data}", 'green'))
+    except Exception as e:
+        # Silently handle the exception if the file doesn't exist
+        # You could optionally log the error if needed
+        pass
 
     status_info = show_status_info()
     if status_info:
-        print_header(status_info,"cyan","=")
+        main_header(status_info,"cyan","=")
 
     options = [
         f"{colored('[1]', 'cyan', attrs=['bold'])} Network Scanning",
@@ -115,7 +119,6 @@ def show_menu2():
         f"{colored('[3]', 'cyan', attrs=['bold'])} Deauthentication Attack",
         f"{colored('[4]', 'cyan', attrs=['bold'])} Wordlist Cracking",
         f"{colored('[5]', 'cyan', attrs=['bold'])} View found keys",
-
     ]
 
     utility_options = [
