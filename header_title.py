@@ -55,8 +55,10 @@ def show_menu1():
                 print(colored(f" - {ssid}: {data}", 'green'))
 
     status_info = show_status_info()
-    if status_info:
-        print(status_info)
+    if status_info and isinstance(status_info, dict):
+        # Check if values in the dictionary are not empty
+        if status_info.get('colored') and status_info.get('plain'):
+            print(status_info)
     
     print(colored(separator, 'cyan'))
 
