@@ -1,7 +1,7 @@
 import shutil
 from termcolor import colored
 from functions import check_and_convert_cap_files, load_found_passwords, show_status_info, print_header
-def print_centered_title():
+def print_snype_title():
     terminal_width = shutil.get_terminal_size().columns
     
     ascii_art = [
@@ -25,11 +25,10 @@ def print_centered_title():
     print("\n")
 
 def show_menu1():
-    from header_title import print_centered_title
     terminal_width = shutil.get_terminal_size().columns
     separator = "=" * terminal_width
 
-    print_centered_title()
+    print_snype_title()
     
     print(colored(separator, 'cyan'))
     print(colored(f"   Welcome to snype!", 'cyan', attrs=['bold']))
@@ -74,12 +73,11 @@ def show_menu1():
     return user_option1
 
 def show_menu2():
-    from header_title import print_centered_title
     terminal_width = shutil.get_terminal_size().columns
     separator = "=" * terminal_width
     dash_separator = "-" * terminal_width
 
-    print_centered_title()
+    print_snype_title()
 
     print(colored(separator, 'cyan'))
     print(colored(f" Welcome to snype!", 'cyan', attrs=['bold']))
