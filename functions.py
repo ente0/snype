@@ -334,7 +334,7 @@ def save_password(network_ssid, password, cap_file):
         cap_file (str): Path to the capture file
     """
     try:
-        if network_ssid.lower() == "encryption"
+        if network_ssid.lower() == "encryption":
             directory = os.path.dirname(os.path.abspath(cap_file))
             folder_name = os.path.basename(directory)
             
