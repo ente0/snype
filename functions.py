@@ -336,9 +336,7 @@ def save_password(network_ssid, password, cap_file):
         cap_file (str): Path to the capture file
     """
     try:
-        # Validate SSID - prevent "Encryption" being incorrectly used as SSID
-        if network_ssid.lower() == "encryption":
-            # Extract real SSID from the capture file path
+        if network_ssid.lower() == "encryption"
             directory = os.path.dirname(os.path.abspath(cap_file))
             folder_name = os.path.basename(directory)
             
@@ -351,11 +349,9 @@ def save_password(network_ssid, password, cap_file):
                 verify = input(colored("Enter correct SSID or press Enter to continue: ", "cyan")).strip()
                 if verify:
                     network_ssid = verify
-        
-        # Load existing passwords
+       
         found_passwords = load_found_passwords()
-        
-        # Get timestamp
+      
         timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
         
         # Update found_passwords dictionary
@@ -365,7 +361,6 @@ def save_password(network_ssid, password, cap_file):
             "date_cracked": timestamp
         }
         
-        # Create a passwords directory and save individual password file
         directory = os.path.dirname(os.path.abspath(cap_file))
         if not directory:
             directory = "."
@@ -1172,19 +1167,15 @@ def print_header(text, color="blue", char="=", centered=True, padding_left=0):
     except Exception:
         term_width = 80
     
-    # Print top border line
     print(colored(char * term_width, color))
     
-    # Print the text line
     if centered:
         # For centered text
         padding = (term_width - len(text)) // 2
         text_line = " " * padding + text
     else:
-        # For left-aligned text with specific padding
         text_line = " " * padding_left + text
     
     print(colored(text_line, color))
     
-    # Print bottom border line
     print(colored(char * term_width, color))
