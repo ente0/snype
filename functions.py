@@ -146,25 +146,33 @@ def get_saved_network_info():
         return None, None, None
 
 def show_status_info():
-    """Generate status information string for interfaces and target"""
+    """Generate status information string for interfaces and target centered in the terminal"""
     iface1, iface2 = get_saved_interface_info()
     bssid, channel, essid = get_saved_network_info()
-
     status = []
-    if iface1:
-        status.append(f"Monitor: {colored(iface1, 'green')}")
-        if iface2 and iface2 != iface1:
-            status.append(f"Inject: {colored(iface2, 'green')}")
-
-    if bssid:
-        target_info = f"Target: {colored(bssid, 'yellow')}"
-        if channel:
-            target_info += f" (Ch: {colored(channel, 'yellow')})"
-        status.append(target_info)
-        if essid:
-            status.append(f"ESSID: {colored(essid, 'yellow')}")
     
-    return "   " + " | ".join(status) if status else ""
+    if iface1:
+        status.append(f"{colored('Monitor: ', 'white')}{colored(iface1, 'green')}")
+    if iface2 and iface2 != iface1:
+        status.append(f"{colored('Inject: ', 'white')}{colored(iface2, 'green')}")
+    if bssid:
+        target_info = f"{colored('Target: ', 'white')}{colored(bssid, 'yellow')}"
+        if channel:
+            target_info += f" {colored('(Ch: ', 'white')}{colored(channel, 'yellow')}{colored(')', 'white')}"
+        status.append(target_info)
+    if essid:
+        status.append(f"{colored('ESSID: ', 'white')}{colored(essid, 'yellow')}")
+    
+    status_text = " | ".join(status) if status else ""
+    
+    terminal_width = shutil.get_terminal_size().columns
+    
+    from re import sub
+    visible_length = len(sub(r'\x1b\[[0-9;]*m', '', status_text))
+    
+    padding = max(0, (terminal_width - visible_length) // 2)
+    
+    return " " * padding + status_text
 
 
 
@@ -609,7 +617,7 @@ def scan_networks_and_select_bssid(interface):
     try:
         subprocess.run(["sudo", "airmon-ng", "check", "kill"], capture_output=True)
         
-        process = subprocess.Popen(["sudo", "airodump-ng", "-w", tmp_file, "--output-format", "csv", interface])
+        process = subprocess.Popen(["sudo", "airodump-ng", "-w", "eapol", "--output-format", "pcap", interface])
         
         try:
             while True:
@@ -792,6 +800,8 @@ def delete_essidlist_files():
 def check_and_convert_cap_files():
     """
     Check for .cap files and convert them to hc22000 format in the background.
+    Creates folders based on ESSID extracted using aircrack-ng.
+    
     Returns:
     - A list of existing hc22000 files in the handshakes folder
     - A list of existing .cap files in the handshakes folder
@@ -804,64 +814,80 @@ def check_and_convert_cap_files():
                 if any(file.endswith(ext) for ext in extensions):
                     found_files.append(os.path.join(root, file))
         return found_files
-
+    
     cap_files = [f for f in os.listdir('.') if f.endswith('.cap')]
     handshakes_dir = "handshakes"
     
     if not os.path.exists(handshakes_dir):
         return [], [], []
-
+    
     if not cap_files:
         existing_hc22000_files = find_files_in_directory(handshakes_dir, ['.hc22000'])
         existing_cap_files = find_files_in_directory(handshakes_dir, ['.cap'])
         return existing_hc22000_files, existing_cap_files, []
-
+    
     hc22000_files = []
     processed_cap_files = []
     
     try:
-        cleanup_essidlist_files() 
+        cleanup_essidlist_files()
     except NameError:
         pass
-
+    
     for cap_file in cap_files:
         try:
             base_name = os.path.splitext(cap_file)[0]
             hc22000_file = f"{base_name}.hc22000"
-            essidlist = os.path.join(handshakes_dir, f"essidlist_{int(time.time())}.txt")
+            
+            extract_cmd = f"aircrack-ng {cap_file} | awk '/WPA \\(/ {{for (i=3; i<NF; i++) printf(\"%s%s\", i>3 ? \"_\" : \"\", $i); print \"\"}}'"
+            process = subprocess.run(extract_cmd, shell=True, capture_output=True, text=True)
+            
+            essid = process.stdout.strip()
+            
+            if not essid:
+                essidlist = os.path.join(handshakes_dir, f"essidlist_{int(time.time())}.txt")
+                conversion_cmd = [
+                    'hcxpcapngtool',
+                    '-o', hc22000_file,
+                    '-E', essidlist,
+                    cap_file
+                ]
+                subprocess.run(conversion_cmd, capture_output=True)
+                
+                if os.path.exists(essidlist):
+                    with open(essidlist, 'r') as f:
+                        essids = [line.strip() for line in f if line.strip()]
+                    if essids:
+                        essid = essids[0]
+                    if os.path.exists(essidlist):
+                        os.remove(essidlist)
             
             conversion_cmd = [
                 'hcxpcapngtool',
                 '-o', hc22000_file,
-                '-E', essidlist,
                 cap_file
             ]
-            
             subprocess.run(conversion_cmd, capture_output=True)
+            
             processed_cap_files.append(cap_file)
-
+            
             if os.path.exists(hc22000_file) and os.path.getsize(hc22000_file) > 0:
-                if os.path.exists(essidlist):
-                    with open(essidlist, 'r') as f:
-                        essids = [line.strip() for line in f if line.strip()]
+                if essid:
+                    clean_essid = essid.split('_WPA')[0]
                     
-                    for essid in essids:
-                        safe_essid = "".join(c if c.isalnum() or c in ['-', '_'] else '_' for c in essid)
-                        network_dir = os.path.join(handshakes_dir, safe_essid)
-                        os.makedirs(network_dir, exist_ok=True)
-                        
-                        dest_hc22000 = os.path.join(network_dir, hc22000_file)
-                        shutil.move(hc22000_file, dest_hc22000)
-                        
-                        dest_cap = os.path.join(network_dir, cap_file)
-                        shutil.move(cap_file, dest_cap)
-                        
-                    if os.path.exists(essidlist):
-                        os.remove(essidlist)
-
+                    safe_essid = "".join(c if c.isalnum() or c in ['-', '_'] else '_' for c in clean_essid)
+                    network_dir = os.path.join(handshakes_dir, safe_essid)
+                    os.makedirs(network_dir, exist_ok=True)
+                    
+                    dest_hc22000 = os.path.join(network_dir, hc22000_file)
+                    shutil.move(hc22000_file, dest_hc22000)
+                    
+                    dest_cap = os.path.join(network_dir, cap_file)
+                    shutil.move(cap_file, dest_cap)
+                
         except Exception as e:
             print(f"Error processing {cap_file}: {e}")
-
+    
     existing_hc22000_files = find_files_in_directory(handshakes_dir, ['.hc22000'])
     existing_cap_files = find_files_in_directory(handshakes_dir, ['.cap'])
     
@@ -870,7 +896,7 @@ def check_and_convert_cap_files():
 def auto_convert_latest_cap_file():
     """
     Automatically convert the most recent .cap file to hc22000 format without user input
-    Moves both .cap and .hc22000 files to network-specific directories
+    Extracts ESSID using aircrack-ng and moves both .cap and .hc22000 files to network-specific directories
     
     Returns:
     - Path to the generated hc22000 file
@@ -888,7 +914,7 @@ def auto_convert_latest_cap_file():
             key=lambda f: os.path.getmtime(f)
         )
         return latest_cap_file
-
+    
     handshakes_dir = "handshakes"
     os.makedirs(handshakes_dir, exist_ok=True)
     
@@ -899,44 +925,61 @@ def auto_convert_latest_cap_file():
     try:
         base_name = os.path.splitext(cap_file)[0]
         hc22000_file = f"{base_name}.hc22000"
-        essidlist = os.path.join(handshakes_dir, f"essidlist_{int(time.time())}.txt")
+        
+        extract_cmd = f"aircrack-ng {cap_file} | awk '/WPA \\(/ {{for (i=3; i<NF; i++) printf(\"%s%s\", i>3 ? \"_\" : \"\", $i); print \"\"}}'"
+        process = subprocess.run(extract_cmd, shell=True, capture_output=True, text=True)
+        
+        essid = process.stdout.strip()
+        
+        if not essid:
+            essidlist = os.path.join(handshakes_dir, f"essidlist_{int(time.time())}.txt")
+            conversion_cmd = [
+                'hcxpcapngtool',
+                '-o', hc22000_file,
+                '-E', essidlist,
+                cap_file
+            ]
+            subprocess.run(conversion_cmd, capture_output=True, check=True)
+            
+            if os.path.exists(essidlist):
+                with open(essidlist, 'r') as f:
+                    essids = [line.strip() for line in f if line.strip()]
+                if essids:
+                    essid = essids[0]
+                if os.path.exists(essidlist):
+                    os.remove(essidlist)
         
         conversion_cmd = [
             'hcxpcapngtool',
             '-o', hc22000_file,
-            '-E', essidlist,
             cap_file
         ]
-        
         subprocess.run(conversion_cmd, capture_output=True, check=True)
         
         if os.path.exists(hc22000_file) and os.path.getsize(hc22000_file) > 0:
-            if os.path.exists(essidlist):
-                with open(essidlist, 'r') as f:
-                    essids = [line.strip() for line in f if line.strip()]
+            if essid:
+                clean_essid = essid.split('_WPA')[0]
                 
-                for essid in essids:
-                    safe_essid = "".join(
-                        c if c.isalnum() or c in ['-', '_'] else '_'
-                        for c in essid
-                    )
-                    network_dir = os.path.join(handshakes_dir, safe_essid)
-                    os.makedirs(network_dir, exist_ok=True)
-                    
-                    dest_hc22000 = os.path.join(network_dir, os.path.basename(hc22000_file))
-                    shutil.move(hc22000_file, dest_hc22000)
-                    
-                    dest_cap = os.path.join(network_dir, os.path.basename(cap_file))
-                    shutil.move(cap_file, dest_cap)
-                    
-                    hc22000_file = dest_hc22000
-                    cap_file = dest_cap
-            
-            if os.path.exists(essidlist):
-                os.remove(essidlist)
+                safe_essid = "".join(
+                    c if c.isalnum() or c in ['-', '_'] else '_'
+                    for c in clean_essid
+                )
+                network_dir = os.path.join(handshakes_dir, safe_essid)
+                os.makedirs(network_dir, exist_ok=True)
+                
+                dest_hc22000 = os.path.join(network_dir, os.path.basename(hc22000_file))
+                shutil.move(hc22000_file, dest_hc22000)
+                
+                dest_cap = os.path.join(network_dir, os.path.basename(cap_file))
+                shutil.move(cap_file, dest_cap)
+                
+                hc22000_file = dest_hc22000
+                cap_file = dest_cap
             
             return hc22000_file, cap_file
-    
+        else:
+            return None, None
+            
     except Exception as e:
         print(f"Error converting {cap_file}: {e}")
         return None, None
@@ -1109,7 +1152,6 @@ def print_header(text, color="blue", char="=", centered=True, padding_left=0):
     print(colored(char * term_width, color))
     
     if centered:
-        # For centered text
         padding = (term_width - len(text)) // 2
         text_line = " " * padding + text
     else:
