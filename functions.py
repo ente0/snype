@@ -166,83 +166,16 @@ def show_status_info():
     
     return "   " + " | ".join(status) if status else ""
 
-def show_menu1():
-    terminal_width = shutil.get_terminal_size().columns
-    separator = "=" * terminal_width
 
-    ascii_art = """
-    
-                         _____ ____   __ __  ____   ___ 
-                        / ___/|    \ |  |  ||    \ /  _]
-                       (   \_ |  _  ||  |  ||  o  )  [_ 
-                        \__  ||  |  ||  ~  ||   _/    _]
-                        /  \ ||  |  ||___, ||  | |   [_ 
-                        \    ||  |  ||     ||  | |     |
-                         \___||__|__||____/ |__| |_____|
-
-            For more information, visit: https://github.com/ente0/snype
-    """
-    print(colored(ascii_art, 'cyan'))
-    print(colored(separator, 'cyan'))
-    print(colored(f"   Welcome to snype!", 'cyan', attrs=['bold']))
-    
-    hc22000_files, cap_files, processed_cap_files = check_and_convert_cap_files()
-
-    if hc22000_files:
-        print(colored(f"\n [✓] {len(hc22000_files)} .hc22000 file(s) generated:", 'green', attrs=['bold']))
-        for file in hc22000_files:
-            print(colored(f" - {file}", 'green'))
-
-    if cap_files:
-        print(colored(f" [✓] {len(cap_files)} .cap file(s) found:", 'green', attrs=['bold']))
-        for file in cap_files:
-            print(colored(f" - {file}", 'green'))
-    
-    found_passwords = load_found_passwords()
-    if found_passwords:
-        print(colored(f" [✓] {len(found_passwords)} network password(s) found:", 'green', attrs=['bold']))
-        for ssid, data in found_passwords.items():
-            if isinstance(data, dict):  
-                print(colored(f" - {ssid}: {data['password']}\n", 'green'))
-            else:  
-                print(colored(f" - {ssid}: {data}\n", 'green'))
-
-    status_info = show_status_info()
-    if status_info:
-        print(status_info)
-    
-    print(colored(separator, 'cyan'))
-
-    options = [
-        f"{colored('[1]', 'cyan', attrs=['bold'])} Set 1st interface",
-        f"{colored('[2]', 'cyan', attrs=['bold'])} Set 2nd interface (optional)",
-    ]
-    print("\n   " + "\n   ".join(options))
-
-    print(colored("\n" + separator, 'cyan'))
-
-    user_option1 = input(colored("\nEnter option (1-2, Q to quit): ", 'cyan', attrs=['bold'])).strip().lower()
-
-    return user_option1
 
 def show_menu2():
+    from header_title import print_centered_title
     terminal_width = shutil.get_terminal_size().columns
     separator = "=" * terminal_width
     dash_separator = "-" * terminal_width
 
-    ascii_art = """
-    
-                         _____ ____   __ __  ____   ___ 
-                        / ___/|    \ |  |  ||    \ /  _]
-                       (   \_ |  _  ||  |  ||  o  )  [_ 
-                        \__  ||  |  ||  ~  ||   _/    _]
-                        /  \ ||  |  ||___, ||  | |   [_ 
-                        \    ||  |  ||     ||  | |     |
-                         \___||__|__||____/ |__| |_____|
+    print_centered_title()
 
-            For more information, visit: https://github.com/ente0/snype
-    """
-    print(colored(ascii_art, 'cyan'))
     print(colored(separator, 'cyan'))
     print(colored(f" Welcome to snype!", 'cyan', attrs=['bold']))
 
@@ -264,9 +197,9 @@ def show_menu2():
         print(colored(f" [✓] {len(found_passwords)} network password(s) found:", 'green', attrs=['bold']))
         for ssid, data in found_passwords.items():
             if isinstance(data, dict):  
-                print(colored(f" - {ssid}: {data['password']}\n", 'green'))
+                print(colored(f" - {ssid}: {data['password']}", 'green'))
             else:  
-                print(colored(f" - {ssid}: {data}\n", 'green'))
+                print(colored(f" - {ssid}: {data}", 'green'))
 
 
     status_info = show_status_info()
@@ -338,7 +271,6 @@ def save_password(network_ssid, password, cap_file):
             directory = os.path.dirname(os.path.abspath(cap_file))
             folder_name = os.path.basename(directory)
             
-            # If folder name looks like a valid SSID, use it instead
             if folder_name and folder_name not in [".", "handshakes"]:
                 print(colored(f"[!] Warning: SSID 'Encryption' detected, using '{folder_name}' from capture path instead", "yellow"))
                 network_ssid = folder_name
@@ -749,10 +681,10 @@ def scan_networks_and_select_bssid(interface):
                 pass
 
 def delete_cap_files():
-    """Delete capture files in the current directory"""
-    print(colored("[+] Deleting capture files...", 'yellow'))
+    """Delete capture files in the current directory (not in handshakes)"""
+    print(colored("[+] Deleting capture files ...", 'yellow'))
     try:
-        confirm = input(colored("Are you sure you want to delete all .cap files in the current directory? (y/n): ", 'cyan'))
+        confirm = input(colored("Are you sure you want to delete all .cap files in the current directory (not in 'handshakes')? (y/n): ", 'cyan'))
         
         if confirm.lower() != 'y':
             print(colored("Operation cancelled.", 'yellow'))

@@ -3,14 +3,16 @@ import sys
 import time
 import subprocess
 from termcolor import colored
+from header_title import (
+    show_menu1,
+    show_menu2
+)
 
 try:
     from snype import (
         clear_screen,
         get_saved_interface_info,
         get_saved_network_info,
-        show_menu1,
-        show_menu2,
         define_ifaces,
         flush_services,
         scan_networks_and_select_bssid,
@@ -23,15 +25,15 @@ try:
         check_and_convert_cap_files,
         select_primary_interface,
         select_secondary_interface,
-        auto_convert_latest_cap_file  
+        auto_convert_latest_cap_file,
+        view_saved_passwords  
     )
 except ImportError:
+
     from functions import (
         clear_screen,
         get_saved_interface_info,
         get_saved_network_info,
-        show_menu1,
-        show_menu2,
         define_ifaces,
         flush_services,
         scan_networks_and_select_bssid,
@@ -44,7 +46,8 @@ except ImportError:
         check_and_convert_cap_files,
         select_primary_interface,
         select_secondary_interface,
-        auto_convert_latest_cap_file
+        auto_convert_latest_cap_file,
+        view_saved_passwords
     )
 
 def main():
@@ -98,26 +101,30 @@ def main():
                     input("Press Enter to return to the menu...")
                 clear_screen()
             elif user_option == "5":
+                clear_screen() 
+                view_saved_passwords()
+                clear_screen()  
+            elif user_option == "6":
                 clear_screen()  
                 flush_services()
-            elif user_option == "6":
+            elif user_option == "7":
                 bssid = scan_networks_and_select_bssid(iface1)
                 clear_screen() 
-            elif user_option == "7":
+            elif user_option == "8":
                 clear_screen()  
                 iface1, iface2 = define_ifaces()
-            elif user_option == "8":
+            elif user_option == "9":
                 clear_config_files()
                 iface1, iface2 = None, None
                 bssid = None
                 clear_screen() 
-            elif user_option == "9":
+            elif user_option == "10":
                 convert_eapol()
                 clear_screen() 
-            elif user_option == "10":
+            elif user_option == "11":
                 delete_cap_files()
                 clear_screen() 
-            elif user_option == "11":
+            elif user_option == "12":
                 delete_essidlist_files()
                 clear_screen()  
             elif user_option in ["1", "2"]:

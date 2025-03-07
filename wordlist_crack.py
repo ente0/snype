@@ -155,6 +155,38 @@ class WifiCrackingTool:
             self.logger.error(colored(f"[!] Error in wordlist selection: {e}", "red"))
             return None
     
+    def extract_ssid(self, cap_file):
+        """Extract SSID from the capture file using aircrack-ng"""
+        try:
+            cmd = f"aircrack-ng {cap_file} | awk '/WPA \\(/ {{for (i=3; i<NF-2; i++) printf \"%s%s\", (i>3 ? \"_\" : \"\"), $i; print \"\"}}'"
+            
+            process = subprocess.Popen(
+                cmd, 
+                shell=True,
+                stdout=subprocess.PIPE, 
+                stderr=subprocess.PIPE, 
+                text=True
+            )
+            
+            stdout, stderr = process.communicate()
+            
+            if process.returncode != 0:
+                self.logger.warning(colored(f"[!] Failed to extract SSID: {stderr}", "red"))
+                return None
+            
+            lines = stdout.strip().split('\n')
+            if lines and lines[0]:
+                ssid = lines[0].strip()
+                self.logger.info(colored(f"[+] Extracted SSID: {ssid}", "green"))
+                return ssid
+            else:
+                self.logger.warning(colored("[!] No SSID found in the capture file", "yellow"))
+                return None
+            
+        except Exception as e:
+            self.logger.error(colored(f"[!] Error extracting SSID: {e}", "red"))
+            return None
+    
     def crack_wifi(self, cap_file, wordlist):
         process = None
         password_found = False
@@ -170,10 +202,15 @@ class WifiCrackingTool:
             if not os.path.exists(wordlist):
                 print(colored(f"[ERROR] Wordlist not found: {wordlist}", "red"))
                 return False
+            
+            network_ssid = self.extract_ssid(cap_file)
+            
             print("\n")
             print_header("CRACKING WIFI PASSWORD", "yellow","-")
             print(colored("[INFO] Starting Aircrack-ng", "yellow"))
             print(colored("Capture file: ", 'yellow') + cap_file)
+            if network_ssid:
+                print(colored("Network SSID: ", 'yellow') + network_ssid)
             print(colored("Wordlist: ", 'yellow') + wordlist)
             print(colored("\n[*] Cracking will start in:", "green"))
             for i in range(3, 0, -1):
@@ -209,9 +246,10 @@ class WifiCrackingTool:
                     output_buffer.append(line.strip())
                     print(line.strip())
                     
-                    ssid_match = re.search(r'BSSID\s+ESSID\s+(\S+)', line)
-                    if ssid_match:
-                        network_ssid = ssid_match.group(1).strip()
+                    if not network_ssid:
+                        ssid_match = re.search(r'BSSID\s+ESSID\s+(\S+)', line)
+                        if ssid_match:
+                            network_ssid = ssid_match.group(1).strip()
                     
                     key_match = re.search(r"KEY FOUND!\s*\[\s*(.+?)\s*\]", line)
                     if key_match:
@@ -290,9 +328,9 @@ class WifiCrackingTool:
                         print(colored(f" [✓] {len(found_passwords)} network password(s) found:", 'green', attrs=['bold']))
                         for ssid, data in found_passwords.items():
                             if isinstance(data, dict):  
-                                print(colored(f" - {ssid}: {data['password']}\n", 'green'))
+                                print(colored(f" - {ssid}: {data['password']}", 'green'))
                             else:  
-                                print(colored(f" - {ssid}: {data}\n", 'green'))
+                                print(colored(f" - {ssid}: {data}", 'green'))
                     print_header("MAIN MENU", "yellow", char="-")
                     
                     menu_options = [
@@ -310,7 +348,7 @@ class WifiCrackingTool:
                     
                     print(colored("-" * self.term_width, "yellow"))
                     
-                    choice = input(colored("\n[?] Choose an option (1-5): ", "cyan")).strip()
+                    choice = input(colored("\n[?] Choose an option (1-3 or Q): ", "cyan")).strip()
                     
                     if choice == "1":
                         if not cap_file:
