@@ -328,7 +328,7 @@ class WifiCrackingTool:
                     
                     print_header("WiFi Cracking Tool", "blue")
 
-                    found_passwords = load_found_passwords()
+                    found_passwords, file_exists = load_found_passwords()
                     if found_passwords:
                         print(colored(f" [✓] {len(found_passwords)} network password(s) found:", 'green', attrs=['bold']))
                         for ssid, data in found_passwords:

@@ -287,7 +287,7 @@ def save_password(network_ssid, password, cap_file):
 
 def view_saved_passwords():
     """Display detailed information about saved passwords"""
-    found_passwords = load_found_passwords()
+    found_passwords, file_exists = load_found_passwords()
     
     if not found_passwords:
         print(colored("[!] No saved passwords found.", "yellow"))
