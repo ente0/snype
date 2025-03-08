@@ -11,26 +11,29 @@ from termcolor import colored
 default_scripts = os.path.expanduser("~/snype")
 
 def main_header(status_dict, color="white", separator_char="="):
-    """Prints a header with centered status information"""
+    """
+    Displays a frame with separator lines at top and bottom.
+    Ignores content formatting and focuses on the frame.
+    
+    Args:
+        status_dict: Status information (passed through but not formatted)
+        color: Color for the separator lines
+        separator_char: Character to use for separator lines
+    """
+    import shutil
+    from termcolor import colored
+    
     terminal_width = shutil.get_terminal_size().columns
+    
     separator = separator_char * terminal_width
+    
     print(colored(separator, color))
     
     if status_dict:
-        if isinstance(status_dict, dict):
-            plain_text = status_dict.get('plain', '')
-            colored_text = status_dict.get('colored', '')
-            
-            padding = max(0, (terminal_width - len(plain_text)) // 2)
-            centered_text = " " * padding + colored_text
-            print(centered_text)
-        else:
-            padding = max(0, (terminal_width - len(status_dict)) // 2)
-            text_line = " " * padding + status_dict
-            print(text_line)
+        print(status_dict)
     
     print(colored(separator, color))
-
+    
 def save_interface_config(primary_interface, secondary_interface=None):
     """
     Save interface configuration to a file
@@ -168,22 +171,26 @@ def get_saved_network_info():
 
 def show_status_info():
     """Generate status information string for interfaces and target"""
+    from termcolor import colored
+    
     iface1, iface2 = get_saved_interface_info()
     bssid, channel, essid = get_saved_network_info()
-
     status = []
+    
     if iface1:
-        status.append(f"Monitor: {colored(iface1, 'green')}")
-        if iface2 and iface2 != iface1:
-            status.append(f"Inject: {colored(iface2, 'green')}")
-
+        status.append(f"{colored('Monitor', 'white')}: {colored(iface1, 'green')}")
+    
+    if iface2 and iface2 != iface1:
+        status.append(f"{colored('Inject', 'white')}: {colored(iface2, 'green')}")
+    
     if bssid:
-        target_info = f"Target: {colored(bssid, 'yellow')}"
+        target_info = f"{colored('Target', 'white')}: {colored(bssid, 'yellow')}"
         if channel:
-            target_info += f" (Ch: {colored(channel, 'yellow')})"
+            target_info += f" ({colored('Ch', 'white')}: {colored(channel, 'yellow')})"
         status.append(target_info)
-        if essid:
-            status.append(f"ESSID: {colored(essid, 'yellow')}")
+    
+    if essid:
+        status.append(f"{colored('ESSID', 'white')}: {colored(essid, 'yellow')}")
     
     return "   " + " | ".join(status) if status else ""
 
@@ -360,13 +367,10 @@ def save_password(network_ssid, password, cap_file):
         cap_file (str): Path to the capture file
     """
     try:
-        # Validate SSID - prevent "Encryption" being incorrectly used as SSID
         if network_ssid.lower() == "encryption":
-            # Extract real SSID from the capture file path
             directory = os.path.dirname(os.path.abspath(cap_file))
             folder_name = os.path.basename(directory)
             
-            # If folder name looks like a valid SSID, use it instead
             if folder_name and folder_name not in [".", "handshakes"]:
                 print(colored(f"[!] Warning: SSID 'Encryption' detected, using '{folder_name}' from capture path instead", "yellow"))
                 network_ssid = folder_name
@@ -376,20 +380,16 @@ def save_password(network_ssid, password, cap_file):
                 if verify:
                     network_ssid = verify
         
-        # Load existing passwords
         found_passwords = load_found_passwords()
         
-        # Get timestamp
         timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
         
-        # Update found_passwords dictionary
         found_passwords[network_ssid] = {
             "password": password,
             "capture_file": cap_file,
             "date_cracked": timestamp
         }
         
-        # Create a passwords directory and save individual password file
         directory = os.path.dirname(os.path.abspath(cap_file))
         if not directory:
             directory = "."
@@ -405,7 +405,6 @@ def save_password(network_ssid, password, cap_file):
         
         print(colored(f"[+] Password saved to {password_file}", "green"))
         
-        # Save to master file in JSON format
         master_file = "found_passwords.txt"
         password_data = {
             "ssid": network_ssid,
@@ -487,9 +486,9 @@ def get_package_script_path(script_name):
     Find the path to the script, checking multiple possible locations
     """
     potential_paths = [
-        os.path.join(os.path.dirname(__file__), script_name),  # Current directory
-        os.path.join(os.path.dirname(__file__), 'scripts', script_name),  # scripts subdirectory
-        os.path.join(os.path.expanduser('~'), 'snype', script_name),  # User's home directory
+        os.path.join(os.path.dirname(__file__), script_name), 
+        os.path.join(os.path.dirname(__file__), 'scripts', script_name),  
+        os.path.join(os.path.expanduser('~'), 'snype', script_name), 
         script_name 
     ]
     
@@ -581,9 +580,6 @@ def handle_option(option, iface1=None, iface2=None, channel=None, selected_bssid
         
         result = os.system(cmd)
         
-        #if result != 0:
-        #    print(colored(f"Script execution failed with exit code {result}", 'red'))
-    
     except FileNotFoundError as e:
         print(colored(f"Error: {e}", 'red'))
         print(colored("Ensure the script exists in the expected locations.", 'yellow'))
@@ -1232,19 +1228,14 @@ def print_header(text, color="blue", char="=", centered=True, padding_left=0):
     except Exception:
         term_width = 80
     
-    # Print top border line
     print(colored(char * term_width, color))
     
-    # Print the text line
     if centered:
-        # For centered text
         padding = (term_width - len(text)) // 2
         text_line = " " * padding + text
     else:
-        # For left-aligned text with specific padding
         text_line = " " * padding_left + text
     
     print(colored(text_line, color))
     
-    # Print bottom border line
     print(colored(char * term_width, color))

@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import subprocess
 import time
 import threading
@@ -97,6 +96,27 @@ def deauth_attack(interface, ap, target=None, duration=10):
     return True 
 
 
+def get_interface_for_injection():
+    """
+    Get the appropriate interface for injection.
+    Returns the injection interface as first priority.
+    """
+    interface_info = get_saved_interface_info()
+    
+    # Se interface_info è una tupla con almeno 2 elementi, usa il secondo (injection)
+    if isinstance(interface_info, tuple) and len(interface_info) > 1 and interface_info[1]:
+        return interface_info[1]
+    # Altrimenti, se è una tupla con almeno 1 elemento, usa il primo (monitor)
+    elif isinstance(interface_info, tuple) and len(interface_info) > 0 and interface_info[0]:
+        return interface_info[0]
+    # Se è una stringa, usala direttamente
+    elif isinstance(interface_info, str):
+        return interface_info
+    # In caso di fallimento, restituisci None
+    else:
+        return None
+
+
 def main():
     """Main function to handle user input and execute the attack"""
     try:
@@ -128,8 +148,8 @@ def main():
             choice = input(colored("\n[?] Choose an option (1-3 or Q): ", "cyan")).strip()
             
             if choice == "1":
-                interface_info = get_saved_interface_info()
-                interface = interface_info[0] if isinstance(interface_info, tuple) else interface_info
+                # Utilizziamo la nuova funzione che dà priorità all'interfaccia di injection
+                interface = get_interface_for_injection()
                 
                 network_info = get_saved_network_info()
                 ap = network_info[0] if isinstance(network_info, tuple) else network_info
@@ -172,6 +192,7 @@ def main():
             elif choice.strip().lower() == "q":
                 print_header("GOODBYE!", "green")
                 print(colored("\n[*] Exiting the WiFi Deauthentication Tool. Goodbye!", "green"))
+                input("Press Enter to return to the menu...")
                 break
                 
             else:

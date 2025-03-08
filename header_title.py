@@ -1,6 +1,6 @@
 import shutil
 from termcolor import colored
-from functions import check_and_convert_cap_files, load_found_passwords, show_status_info, print_header, main_header
+from functions import check_and_convert_cap_files, load_found_passwords, show_status_info, print_header , main_header
 def print_snype_title():
     terminal_width = shutil.get_terminal_size().columns
     
@@ -55,10 +55,8 @@ def show_menu1():
                 print(colored(f" - {ssid}: {data}", 'green'))
 
     status_info = show_status_info()
-    if status_info and isinstance(status_info, dict):
-        # Check if values in the dictionary are not empty
-        if status_info.get('colored') and status_info.get('plain'):
-            print(status_info)
+    if status_info:
+        print(status_info)
     
     print(colored(separator, 'cyan'))
 
@@ -96,7 +94,6 @@ def show_menu2():
         for file in cap_files:
             print(colored(f" - {file}", 'green'))
     
-    # Load found passwords and handle exceptions
     try:
         found_passwords, file_exists = load_found_passwords()
         if found_passwords and file_exists:
@@ -107,8 +104,6 @@ def show_menu2():
                 else:  
                     print(colored(f" - {ssid}: {data}", 'green'))
     except Exception as e:
-        # Silently handle the exception if the file doesn't exist
-        # You could optionally log the error if needed
         pass
 
     status_info = show_status_info()
