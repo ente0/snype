@@ -331,11 +331,12 @@ class WifiCrackingTool:
                     found_passwords = load_found_passwords()
                     if found_passwords:
                         print(colored(f" [✓] {len(found_passwords)} network password(s) found:", 'green', attrs=['bold']))
-                        for ssid, data in found_passwords.items():
+                        for ssid, data in found_passwords:
                             if isinstance(data, dict):  
                                 print(colored(f" - {ssid}: {data['password']}", 'green'))
                             else:  
                                 print(colored(f" - {ssid}: {data}", 'green'))
+                    
                     print_header("MAIN MENU", "yellow", char="-")
                     
                     menu_options = [

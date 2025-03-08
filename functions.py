@@ -197,7 +197,6 @@ def load_found_passwords():
     """Load found passwords from the master file"""
     passwords = {}
     file_exists = False
-    
     try:
         import json
         if os.path.exists("found_passwords.txt"):
@@ -218,8 +217,8 @@ def load_found_passwords():
                             ssid, password = parts
                             passwords[ssid] = {'password': password}
     except Exception as e:
-        print(colored(f"[!] Error loading passwords: {e}", "red"))
-    
+        if file_exists:
+            print(colored(f"[!] Error loading passwords: {e}", "red"))
     return passwords, file_exists
 
 
