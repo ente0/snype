@@ -178,8 +178,8 @@ def show_status_info():
     
     if iface1:
         status.append(f"{colored('  Monitor', 'white')}: {colored(iface1, 'green')}")
-    
-    if iface2:
+
+    if iface2 and iface2 != iface1:
         status.append(f"{colored('Inject', 'white')}: {colored(iface2, 'green')}")
     
     if bssid:
