@@ -5,7 +5,7 @@ def print_snype_title():
     terminal_width = shutil.get_terminal_size().columns
     
     ascii_art = [
-  "  _____ ____   __ __  ____   ___ ",
+ r"  _____ ____   __ __  ____   ___ ",
  r" / ___/|    \ |  |  ||    \ /  _]",
  r"(   \_ |  _  ||  |  ||  o  )  [_ ",
  r" \__  ||  |  ||  ~  ||   _/    _]",
