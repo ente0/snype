@@ -563,6 +563,7 @@ def scan_networks_and_select_bssid(interface):
     try:
         subprocess.run(["sudo", "airmon-ng", "check", "kill"], capture_output=True)
         
+        # DO NOT CHANGE THIS LINE
         process = subprocess.Popen(["sudo", "airodump-ng", "-w", tmp_file, "--output-format", "csv", interface])
         
         try:
