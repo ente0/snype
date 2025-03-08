@@ -36,23 +36,23 @@ def show_menu1():
     hc22000_files, cap_files, processed_cap_files = check_and_convert_cap_files()
 
     if hc22000_files:
-        print(colored(f"\n [✓] {len(hc22000_files)} .hc22000 file(s) generated:", 'green', attrs=['bold']))
+        print(colored(f"\n    [✓] {len(hc22000_files)} .hc22000 file(s) generated:", 'green', attrs=['bold']))
         for file in hc22000_files:
             print(colored(f" - {file}", 'green'))
 
     if cap_files:
-        print(colored(f" [✓] {len(cap_files)} .cap file(s) found:", 'green', attrs=['bold']))
+        print(colored(f"    [✓] {len(cap_files)} .cap file(s) found:", 'green', attrs=['bold']))
         for file in cap_files:
             print(colored(f" - {file}", 'green'))
     
     found_passwords, file_exists = load_found_passwords()
     if found_passwords:
-        print(colored(f" [✓] {len(found_passwords)} network password(s) found:", 'green', attrs=['bold']))
+        print(colored(f"    [✓] {len(found_passwords)} network password(s) found:", 'green', attrs=['bold']))
         for ssid, data in found_passwords.items():
             if isinstance(data, dict):  
-                print(colored(f" - {ssid}: {data['password']}", 'green'))
+                print(colored(f"     - {ssid}: {data['password']}", 'green'))
             else:  
-                print(colored(f" - {ssid}: {data}", 'green'))
+                print(colored(f"     - {ssid}: {data}", 'green'))
 
     status_info = show_status_info()
     if status_info:
@@ -80,29 +80,29 @@ def show_menu2():
     print_snype_title()
 
     print(colored(separator, 'cyan'))
-    print(colored(f" Welcome to snype!", 'cyan', attrs=['bold']))
+    print(colored(f"   Welcome to snype!", 'cyan', attrs=['bold']))
 
     hc22000_files, cap_files, processed_cap_files = check_and_convert_cap_files()
 
     if hc22000_files:
-        print(colored(f"\n [✓] {len(hc22000_files)} .hc22000 file(s) generated:", 'green', attrs=['bold']))
+        print(colored(f"\n    [✓] {len(hc22000_files)} .hc22000 file(s) generated:", 'green', attrs=['bold']))
         for file in hc22000_files:
-            print(colored(f" - {file}", 'green'))
+            print(colored(f"     - {file}", 'green'))
 
     if cap_files:
-        print(colored(f" [✓] {len(cap_files)} .cap file(s) found:", 'green', attrs=['bold']))
+        print(colored(f"    [✓] {len(cap_files)} .cap file(s) found:", 'green', attrs=['bold']))
         for file in cap_files:
-            print(colored(f" - {file}", 'green'))
+            print(colored(f"     - {file}", 'green'))
     
     try:
         found_passwords, file_exists = load_found_passwords()
         if found_passwords and file_exists:
-            print(colored(f" [✓] {len(found_passwords)} network password(s) found:", 'green', attrs=['bold']))
+            print(colored(f"    [✓] {len(found_passwords)} network password(s) found:", 'green', attrs=['bold']))
             for ssid, data in found_passwords.items():
                 if isinstance(data, dict):  
-                    print(colored(f" - {ssid}: {data['password']}", 'green'))
+                    print(colored(f"     - {ssid}: {data['password']}", 'green'))
                 else:  
-                    print(colored(f" - {ssid}: {data}", 'green'))
+                    print(colored(f"     - {ssid}: {data}", 'green'))
     except Exception as e:
         pass
 

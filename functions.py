@@ -33,7 +33,7 @@ def main_header(status_dict, color="white", separator_char="="):
         print(status_dict)
     
     print(colored(separator, color))
-    
+
 def save_interface_config(primary_interface, secondary_interface=None):
     """
     Save interface configuration to a file
@@ -172,15 +172,14 @@ def get_saved_network_info():
 def show_status_info():
     """Generate status information string for interfaces and target"""
     from termcolor import colored
-    
     iface1, iface2 = get_saved_interface_info()
     bssid, channel, essid = get_saved_network_info()
     status = []
     
     if iface1:
-        status.append(f"{colored('Monitor', 'white')}: {colored(iface1, 'green')}")
+        status.append(f"{colored('  Monitor', 'white')}: {colored(iface1, 'green')}")
     
-    if iface2 and iface2 != iface1:
+    if iface2:
         status.append(f"{colored('Inject', 'white')}: {colored(iface2, 'green')}")
     
     if bssid:
@@ -192,141 +191,7 @@ def show_status_info():
     if essid:
         status.append(f"{colored('ESSID', 'white')}: {colored(essid, 'yellow')}")
     
-    return "   " + " | ".join(status) if status else ""
-
-def show_menu1():
-    terminal_width = shutil.get_terminal_size().columns
-    separator = "=" * terminal_width
-
-    ascii_art = """
-    
-                         _____ ____   __ __  ____   ___ 
-                        / ___/|    \ |  |  ||    \ /  _]
-                       (   \_ |  _  ||  |  ||  o  )  [_ 
-                        \__  ||  |  ||  ~  ||   _/    _]
-                        /  \ ||  |  ||___, ||  | |   [_ 
-                        \    ||  |  ||     ||  | |     |
-                         \___||__|__||____/ |__| |_____|
-
-            For more information, visit: https://github.com/ente0/snype
-    """
-    print(colored(ascii_art, 'cyan'))
-    print(colored(separator, 'cyan'))
-    print(colored(f"   Welcome to snype!", 'cyan', attrs=['bold']))
-    
-    hc22000_files, cap_files, processed_cap_files = check_and_convert_cap_files()
-
-    if hc22000_files:
-        print(colored(f"\n [✓] {len(hc22000_files)} .hc22000 file(s) generated:", 'green', attrs=['bold']))
-        for file in hc22000_files:
-            print(colored(f" - {file}", 'green'))
-
-    if cap_files:
-        print(colored(f" [✓] {len(cap_files)} .cap file(s) found:", 'green', attrs=['bold']))
-        for file in cap_files:
-            print(colored(f" - {file}", 'green'))
-    
-    found_passwords = load_found_passwords()
-    if found_passwords:
-        print(colored(f" [✓] {len(found_passwords)} network password(s) found:", 'green', attrs=['bold']))
-        for ssid, data in found_passwords.items():
-            if isinstance(data, dict):  
-                print(colored(f" - {ssid}: {data['password']}\n", 'green'))
-            else:  
-                print(colored(f" - {ssid}: {data}\n", 'green'))
-
-    status_info = show_status_info()
-    if status_info:
-        print(status_info)
-    
-    print(colored(separator, 'cyan'))
-
-    options = [
-        f"{colored('[1]', 'cyan', attrs=['bold'])} Set 1st interface",
-        f"{colored('[2]', 'cyan', attrs=['bold'])} Set 2nd interface (optional)",
-    ]
-    print("\n   " + "\n   ".join(options))
-
-    print(colored("\n" + separator, 'cyan'))
-
-    user_option1 = input(colored("\nEnter option (1-2, Q to quit): ", 'cyan', attrs=['bold'])).strip().lower()
-
-    return user_option1
-
-def show_menu2():
-    terminal_width = shutil.get_terminal_size().columns
-    separator = "=" * terminal_width
-    dash_separator = "-" * terminal_width
-
-    ascii_art = """
-    
-                         _____ ____   __ __  ____   ___ 
-                        / ___/|    \ |  |  ||    \ /  _]
-                       (   \_ |  _  ||  |  ||  o  )  [_ 
-                        \__  ||  |  ||  ~  ||   _/    _]
-                        /  \ ||  |  ||___, ||  | |   [_ 
-                        \    ||  |  ||     ||  | |     |
-                         \___||__|__||____/ |__| |_____|
-
-            For more information, visit: https://github.com/ente0/snype
-    """
-    print(colored(ascii_art, 'cyan'))
-    print(colored(separator, 'cyan'))
-    print(colored(f" Welcome to snype!", 'cyan', attrs=['bold']))
-
-
-    hc22000_files, cap_files, processed_cap_files = check_and_convert_cap_files()
-
-    if hc22000_files:
-        print(colored(f"\n [✓] {len(hc22000_files)} .hc22000 file(s) generated:", 'green', attrs=['bold']))
-        for file in hc22000_files:
-            print(colored(f" - {file}", 'green'))
-
-    if cap_files:
-        print(colored(f" [✓] {len(cap_files)} .cap file(s) found:", 'green', attrs=['bold']))
-        for file in cap_files:
-            print(colored(f" - {file}", 'green'))
-    
-    found_passwords = load_found_passwords()
-    if found_passwords:
-        print(colored(f" [✓] {len(found_passwords)} network password(s) found:", 'green', attrs=['bold']))
-        for ssid, data in found_passwords.items():
-            if isinstance(data, dict):  
-                print(colored(f" - {ssid}: {data['password']}\n", 'green'))
-            else:  
-                print(colored(f" - {ssid}: {data}\n", 'green'))
-
-
-    status_info = show_status_info()
-    if status_info:
-        print_header(status_info,"cyan","=")
-
-    options = [
-        f"{colored('[1]', 'cyan', attrs=['bold'])} Network Scanning",
-        f"{colored('[2]', 'cyan', attrs=['bold'])} Monitor Target Traffic",
-        f"{colored('[3]', 'cyan', attrs=['bold'])} Deauthentication Attack",
-        f"{colored('[4]', 'cyan', attrs=['bold'])} Wordlist Cracking",
-    ]
-
-    utility_options = [
-        f"{colored('[5]', 'magenta', attrs=['bold'])} Flush Services",
-        f"{colored('[6]', 'magenta', attrs=['bold'])} Change Target BSSID",
-        f"{colored('[7]', 'magenta', attrs=['bold'])} Modify Interfaces",
-        f"{colored('[8]', 'magenta', attrs=['bold'])} Clear Configuration",
-        f"{colored('[9]', 'magenta', attrs=['bold'])} Convert EAPOL to hc22000",
-        f"{colored('[10]', 'magenta', attrs=['bold'])} Delete Capture Files",
-        f"{colored('[11]', 'magenta', attrs=['bold'])} Clear ESSID Lists",
-    ]
-
-    print(colored("\n ATTACK MODULES:", 'blue', attrs=['bold']))
-    print("\n " + "\n ".join(options))
-    print("\n" + colored(dash_separator, 'cyan'))
-    print(colored("\n UTILITY FUNCTIONS:", 'magenta', attrs=['bold']))
-    print("\n " + "\n ".join(utility_options))
-    print(colored("\n" + separator, 'magenta'))
-
-    user_option2 = input(colored("\nEnter option (1-12, Q to quit): ", 'cyan', attrs=['bold'])).strip().lower()
-    return user_option2
+    return " " + " | ".join(status) if status else ""
 
 def load_found_passwords():
     """Load found passwords from the master file"""

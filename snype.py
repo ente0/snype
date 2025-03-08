@@ -70,6 +70,7 @@ def main():
             elif user_option == "1":
                 clear_screen()
                 iface1 = select_primary_interface()
+                iface2 = select_secondary_interface()
             
             elif user_option == "2":
                 clear_screen()
