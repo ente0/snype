@@ -103,16 +103,12 @@ def get_interface_for_injection():
     """
     interface_info = get_saved_interface_info()
     
-    # Se interface_info è una tupla con almeno 2 elementi, usa il secondo (injection)
     if isinstance(interface_info, tuple) and len(interface_info) > 1 and interface_info[1]:
         return interface_info[1]
-    # Altrimenti, se è una tupla con almeno 1 elemento, usa il primo (monitor)
     elif isinstance(interface_info, tuple) and len(interface_info) > 0 and interface_info[0]:
         return interface_info[0]
-    # Se è una stringa, usala direttamente
     elif isinstance(interface_info, str):
         return interface_info
-    # In caso di fallimento, restituisci None
     else:
         return None
 
@@ -148,7 +144,6 @@ def main():
             choice = input(colored("\n[?] Choose an option (1-3 or Q): ", "cyan")).strip()
             
             if choice == "1":
-                # Utilizziamo la nuova funzione che dà priorità all'interfaccia di injection
                 interface = get_interface_for_injection()
                 
                 network_info = get_saved_network_info()
