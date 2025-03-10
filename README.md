@@ -8,7 +8,7 @@
   <img src="https://img.shields.io/badge/language-python-green" alt="Language: Python">
   <img src="https://img.shields.io/badge/dependencies-python--hcxtools--hcxdumptool--aircrack--ng-green" alt="Dependencies">
   <a href="https://github.com/ente0/snype/releases">
-    <img src="https://img.shields.io/badge/release-v1.0.0-blue" alt="Version">
+    <img src="https://img.shields.io/badge/release-v1.1.6-blue" alt="Version">
   </a>
 </p>
 
