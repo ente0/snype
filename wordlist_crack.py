@@ -134,22 +134,23 @@ class WifiCrackingTool:
                 if not file_choice:
                     if default_wordlist in wordlist_files:
                         return os.path.join(wordlist_dir, default_wordlist)
-                else:
-                    print(colored(f"[!] Default wordlist '{default_wordlist}' not found!", "red"))
-                    return None
-                
-                try:
-                    choice_num = int(file_choice)
-                    if 1 <= choice_num <= len(wordlist_files):
-                        selected_file = wordlist_files[choice_num - 1]
-                        full_path = os.path.join(wordlist_dir, selected_file)
-                        return full_path
                     else:
-                        self.logger.warning(colored("[!] Invalid number. Try again.", "red"))
+                        print(colored(f"[!] Default wordlist '{default_wordlist}' not found!", "red"))
                         return None
-                except ValueError:
-                    self.logger.warning(colored("[!] Please enter a valid number.", "red"))
-                    return None
+                else:
+                    # User entered a number, try to use that wordlist
+                    try:
+                        choice_num = int(file_choice)
+                        if 1 <= choice_num <= len(wordlist_files):
+                            selected_file = wordlist_files[choice_num - 1]
+                            full_path = os.path.join(wordlist_dir, selected_file)
+                            return full_path
+                        else:
+                            self.logger.warning(colored("[!] Invalid number. Try again.", "red"))
+                            return None
+                    except ValueError:
+                        self.logger.warning(colored("[!] Please enter a valid number.", "red"))
+                        return None
             except KeyboardInterrupt:
                 return None
         
@@ -158,7 +159,7 @@ class WifiCrackingTool:
         except Exception as e:
             self.logger.error(colored(f"[!] Error in wordlist selection: {e}", "red"))
             return None
-    
+        
     def extract_ssid(self, cap_file):
         """Extract SSID from the capture file using aircrack-ng"""
         try:
