@@ -80,6 +80,10 @@ sudo pacman -S aircrack-ng python python-pip python-termcolor hcxtools hcxdumpto
 </details>
 
 ## 📖 Usage Guide
+```bash
+# Start the tool
+python3 snype.py
+```
 
 ### Basic Workflow
 
