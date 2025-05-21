@@ -85,7 +85,7 @@ def show_menu2():
     hc22000_files, cap_files, processed_cap_files = check_and_convert_cap_files()
 
     if hc22000_files:
-        print(colored(f"\n    [✓] {len(hc22000_files)} .hc22000 file(s) generated:", 'green', attrs=['bold']))
+        print(colored(f"    [✓] {len(hc22000_files)} .hc22000 file(s) generated:", 'green', attrs=['bold']))
         for file in hc22000_files:
             print(colored(f"     - {file}", 'green'))
 
