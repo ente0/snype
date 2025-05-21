@@ -129,10 +129,10 @@ def show_menu2():
     ]
 
     print(colored("\n ATTACK MODULES:", 'blue', attrs=['bold']))
-    print("\n " + "\n ".join(options))
+    print(" " + "\n ".join(options))
     print("\n" + colored(dash_separator, 'cyan'))
     print(colored("\n UTILITY FUNCTIONS:", 'magenta', attrs=['bold']))
-    print("\n " + "\n ".join(utility_options))
+    print(" " + "\n ".join(utility_options))
     print(colored("\n" + separator, 'magenta'))
 
     user_option2 = input(colored("\nEnter option (1-12, Q to quit): ", 'cyan', attrs=['bold'])).strip().lower()
