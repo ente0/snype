@@ -95,7 +95,7 @@ def run_targeted_airodump(interface=None, mac=None, channel=None):
     subprocess.run(["sudo", "airmon-ng", "check", "kill"], capture_output=True)
     
     try:
-        cmd = ["sudo", "airodump-ng", "-w", "eapol", "--output-format", "pcap"]
+        cmd = ["sudo", "airodump-ng", "--ignore-negative-one", "-w", "eapol", "--output-format", "pcap"]
         if channel_option:
             cmd.extend(["-c", channel_option])
         cmd.extend(["--bssid", mac, interface])
