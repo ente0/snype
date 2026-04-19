@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "snype"
+version = "2.0.0"
+description = "WPA handshake capture utility — TUI wrapper around aircrack-ng and hcxtools"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.10"
+dependencies = [
+    "textual>=0.50",
+    "rich>=13.0",
+]
+
+[project.scripts]
+snype = "cli:bootstrap"
+
+[tool.setuptools]
+py-modules = ["cli"]
+
+[tool.setuptools.packages.find]
+include = ["core*", "tui*", "terminal*"]
