@@ -101,6 +101,21 @@ git pull
 python -m pip install -e .
 ```
 
+### Optional: expose `snype` globally
+
+To run `snype` from any directory without activating `.venv`, add this
+project's virtual-environment binaries to your `PATH`. Run this once from the
+repository root:
+
+```bash
+printf '\nexport PATH="%s/.venv/bin:$PATH"\n' "$PWD" >> ~/.zshrc
+source ~/.zshrc
+```
+
+For Bash, replace `~/.zshrc` with `~/.bashrc` in both commands. This stores
+the repository's absolute `.venv/bin` path; repeat the setup if you move the
+repository.
+
 Leave the environment when finished:
 
 ```bash
