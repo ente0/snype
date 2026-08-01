@@ -12,19 +12,19 @@ __version__ = "2.0.0-dev"
 
 EPILOG = """\
 examples:
-  sudo snype
+  sudo .venv/bin/snype
       Launch the TUI with defaults.
 
-  sudo snype -i wlan0 -I wlan1
+  sudo .venv/bin/snype -i wlan0 -I wlan1
       Preconfigure both wireless interfaces and open the TUI.
 
-  sudo snype -i wlan0 -b AA:BB:CC:DD:EE:FF -c 6 -e MyNet
+  sudo .venv/bin/snype -i wlan0 -b AA:BB:CC:DD:EE:FF -c 6 -e MyNet
       Preselect a target and skip the scan view.
 
-  sudo snype -t tmux
+  sudo .venv/bin/snype -t tmux
       Force the tmux backend for the dual-terminal launcher.
 
-  sudo snype --dry-run -v
+  sudo .venv/bin/snype --dry-run -v
       Print every external command without running anything.
 
 data layout:
