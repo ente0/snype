@@ -76,33 +76,35 @@ snype wraps the standard wireless auditing toolchain behind a single interface:
 
 ## Installation
 
-### pipx (recommended)
-
-[pipx](https://pipx.pypa.io) installs snype in an isolated environment and puts the `snype` command on your `PATH`.
-
-```bash
-git clone https://github.com/ente0/snype.git
-pipx install ./snype
-```
-
-To pick up code changes after pulling:
-
-```bash
-pipx reinstall snype
-```
-
-To uninstall:
-
-```bash
-pipx uninstall snype
-```
-
-### pip (alternative)
+snype is installed in a project-local virtual environment. Its Python
+dependencies and executable stay isolated from the system Python.
 
 ```bash
 git clone https://github.com/ente0/snype.git
 cd snype
-pip install .
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -e .
+```
+
+On Windows PowerShell, activate the environment with:
+
+```powershell
+.venv\Scripts\Activate.ps1
+```
+
+After pulling new changes, refresh the active environment:
+
+```bash
+git pull
+python -m pip install -e .
+```
+
+Leave the environment when finished:
+
+```bash
+deactivate
 ```
 
 ### System dependencies
@@ -113,8 +115,7 @@ pip install .
 ```bash
 sudo apt update
 sudo apt install -y aircrack-ng hcxtools hcxdumptool tmux xterm \
-                    python3 python3-pip pipx
-pipx ensurepath
+                    python3 python3-pip python3-venv
 ```
 </details>
 
@@ -123,8 +124,7 @@ pipx ensurepath
 
 ```bash
 sudo dnf install -y aircrack-ng hcxtools hcxdumptool tmux xterm \
-                    python3 python3-pip pipx
-pipx ensurepath
+                    python3 python3-pip
 ```
 </details>
 
@@ -133,8 +133,7 @@ pipx ensurepath
 
 ```bash
 sudo pacman -S aircrack-ng hcxtools hcxdumptool tmux xterm \
-               python python-pip python-pipx
-pipx ensurepath
+               python python-pip
 ```
 </details>
 
@@ -143,7 +142,6 @@ pipx ensurepath
 
 ```bash
 pkg install aircrack-ng hcxtools tmux python
-pip install textual rich
 ```
 
 snype auto-detects NetHunter and forces the `tmux` backend for the dual-terminal launcher.
@@ -154,7 +152,7 @@ snype auto-detects NetHunter and forces the `tmux` backend for the dual-terminal
 ## Quick Start
 
 ```bash
-sudo snype
+sudo .venv/bin/snype
 ```
 
 The first run performs a one-shot migration: any legacy `handshakes/` directory and the old `selected_network.txt` / `interface_config.txt` files are moved into the new `snype-data/` layout. Nothing is deleted — the old files are relocated, not dropped.
@@ -162,7 +160,7 @@ The first run performs a one-shot migration: any legacy `handshakes/` directory 
 Launch with pre-filled state:
 
 ```bash
-sudo snype -i wlan0 -I wlan1 -b AA:BB:CC:DD:EE:FF -c 6
+sudo .venv/bin/snype -i wlan0 -I wlan1 -b AA:BB:CC:DD:EE:FF -c 6
 ```
 
 If running directly from the repository without installation:
@@ -405,10 +403,10 @@ Benefits:
 </details>
 
 <details>
-<summary>snype command not found after pipx install</summary>
+<summary>snype command not found</summary>
 
-- Run `pipx ensurepath` and restart your shell.
-- Confirm pipx's bin directory (`~/.local/bin`) is in `$PATH`.
+- Activate the project environment: `source .venv/bin/activate`.
+- Or run it directly from the repository root: `sudo .venv/bin/snype`.
 </details>
 
 ---
