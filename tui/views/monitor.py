@@ -16,7 +16,12 @@ from textual.binding import Binding
 from .base import ViewWidget
 from ..state import AppState
 from core import airodump, aireplay, session as session_mod
-from core.hashcat_convert import convert, extract_essid_via_aircrack
+from core.hashcat_convert import (
+    ConversionStatus,
+    convert_capture,
+    extract_essid_via_aircrack,
+    find_hcxpcapngtool,
+)
 
 _POLL_INTERVAL = 1.0
 _MAX_DEAUTH_LINES = 18
@@ -192,6 +197,11 @@ class MonitorView(ViewWidget):
         if self._phase != _IDLE:
             return
         cfg = self.state.config
+        if not find_hcxpcapngtool():
+            self._error = "hcxpcapngtool not found — install hcxtools"
+            self.state.log("[monitor] hcxpcapngtool not found in PATH")
+            self._do_refresh()
+            return
         if not cfg.monitor_iface:
             self._error = "monitor interface not set — open Settings [t]"
             self._do_refresh()
@@ -321,24 +331,34 @@ class MonitorView(ViewWidget):
             cap_candidate.rename(sess.capture_path)
 
         msg = "session ended"
+        result_is_error = False
         if sess.capture_path.exists():
             essid = extract_essid_via_aircrack(sess.capture_path)
             if essid and (not sess.essid or sess.essid == sess.bssid.replace(":", "")):
                 sess.essid = essid
-            hc = convert(sess.capture_path, sess.hashcat_path)
-            sess.handshake_complete = hc is not None
-            msg = f"capture saved → {hc.name}" if hc else "capture saved (no handshake)"
+            result = convert_capture(sess.capture_path, sess.hashcat_path)
+            sess.handshake_complete = result.status == ConversionStatus.SUCCESS
+            if result.status == ConversionStatus.SUCCESS:
+                msg = f"capture saved → {result.output.name}"
+            elif result.status == ConversionStatus.NO_HANDSHAKE:
+                msg = "capture saved (no handshake)"
+            else:
+                result_is_error = True
+                msg = f"capture saved (conversion failed: {result.detail})"
+                self.state.log(f"[monitor] conversion failed: {result.detail}")
         else:
             msg = "no capture file"
+            result_is_error = True
 
         sess.mark_stopped()
         sess.save_meta()
 
         try:
-            self.app.call_from_thread(self._set_result, msg)
+            self.app.call_from_thread(self._set_result, msg, result_is_error)
         except Exception:
             pass
 
-    def _set_result(self, msg: str) -> None:
-        self._last_result = msg
+    def _set_result(self, msg: str, is_error: bool = False) -> None:
+        self._error = msg if is_error else None
+        self._last_result = None if is_error else msg
         self._do_refresh()
