@@ -294,17 +294,24 @@ All artefacts live under a single, portable tree. The default root is `./snype-d
 snype-data/
 ├── config.json                      # interface + last target state
 ├── hs/                              # captures organised by ESSID
-│   └── <ESSID>/
+│   └── <readable-ESSID>-<hash>/
 │       ├── <YYYYMMDD-HHMMSS>/
 │       │   ├── capture.cap
 │       │   ├── capture.hc22000       # present only after successful conversion
 │       │   └── meta.json            # target, timing and handshake result
 │       └── passwords/
-│           └── <ESSID>_password.txt
+│           └── network-<sha256>_password.txt
 ├── logs/
 │   └── snype.log
 └── found_passwords.jsonl            # append-only cracked keys
 ```
+
+The exact ESSID remains unchanged in metadata and the UI, but it is never used
+as a path. Credential filenames are deterministic SHA-256 identifiers, so
+slashes, absolute paths, Unicode variants and colliding display slugs cannot
+redirect or overwrite a password file. Managed directories use mode `0700`
+and credential/config/log files use mode `0600` on POSIX systems. Existing
+custom data roots are validated but are not chmodded wholesale.
 
 ### `meta.json`
 

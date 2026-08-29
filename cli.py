@@ -3,9 +3,8 @@ from __future__ import annotations
 
 import argparse
 import logging
+import os
 import sys
-from pathlib import Path
-
 
 __version__ = "2.0.0-dev"
 
@@ -85,13 +84,16 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def configure_logging(paths, verbose: bool) -> None:
+    from core.paths import ensure_private_file
+
     paths.ensure()
+    log_path = ensure_private_file(paths.logs / "snype.log")
     level = logging.DEBUG if verbose else logging.INFO
     logging.basicConfig(
         level=level,
         format="%(asctime)s %(levelname)s %(name)s: %(message)s",
         handlers=[
-            logging.FileHandler(paths.logs / "snype.log", encoding="utf-8"),
+            logging.FileHandler(log_path, encoding="utf-8"),
             logging.StreamHandler(sys.stderr) if verbose else logging.NullHandler(),
         ],
     )
@@ -100,11 +102,14 @@ def configure_logging(paths, verbose: bool) -> None:
 def bootstrap(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
 
-    from core.paths import build_paths
-    from core.config import Config, Target
+    if os.name == "posix":
+        os.umask(0o077)
+
     from core import migrate
-    from tui.state import AppState
+    from core.config import Config, Target
+    from core.paths import build_paths
     from tui.application import run_tui
+    from tui.state import AppState
 
     paths = build_paths(args.data_dir).ensure()
     configure_logging(paths, args.verbose)

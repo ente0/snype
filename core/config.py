@@ -12,6 +12,8 @@ import tempfile
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
+from .paths import ensure_application_root, ensure_private_file
+
 
 @dataclass
 class Target:
@@ -28,7 +30,7 @@ class Config:
     term_mode: str = "auto"
 
     @classmethod
-    def load(cls, path: Path) -> "Config":
+    def load(cls, path: Path) -> Config:
         if not path.exists():
             return cls()
         try:
@@ -48,13 +50,18 @@ class Config:
         )
 
     def save(self, path: Path) -> None:
-        path.parent.mkdir(parents=True, exist_ok=True)
+        ensure_application_root(path.parent)
+        if path.exists() or path.is_symlink():
+            ensure_private_file(path)
         payload = asdict(self)
         fd, tmp = tempfile.mkstemp(prefix=".cfg-", dir=str(path.parent))
         try:
+            if os.name == "posix":
+                os.fchmod(fd, 0o600)
             with os.fdopen(fd, "w", encoding="utf-8") as fp:
                 json.dump(payload, fp, indent=2)
             os.replace(tmp, path)
+            ensure_private_file(path)
         except Exception:
             if os.path.exists(tmp):
                 os.remove(tmp)
