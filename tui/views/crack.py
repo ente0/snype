@@ -14,11 +14,12 @@ from rich.table import Table
 from rich.text import Text
 from textual.binding import Binding
 
-from .base import ViewWidget
-from ..state import AppState
-from core import crack as crack_mod, passwords
+from core import crack as crack_mod
+from core import passwords
 from core.hashcat_convert import convert as hc_convert
 
+from ..state import AppState
+from .base import ViewWidget
 
 _WORDLIST_DIRS = [
     Path("/usr/share/wordlists"),
@@ -374,9 +375,15 @@ class CrackView(ViewWidget):
             entry = passwords.PasswordEntry(
                 ssid=essid, password=res.password, capture_file=str(cap)
             )
-            passwords.append(self.state.paths.found_passwords, entry)
-            passwords.write_per_network(self.state.paths.essid_dir(essid), entry)
-            self.state.log(f"[crack] KEY FOUND: {res.password}")
+            try:
+                passwords.append(self.state.paths.found_passwords, entry)
+                passwords.write_per_network(self.state.paths, entry)
+            except (OSError, RuntimeError, ValueError) as exc:
+                self.state.log(
+                    f"[crack] KEY FOUND but secure persistence failed: {exc}"
+                )
+            else:
+                self.state.log(f"[crack] KEY FOUND: {res.password}")
         else:
             self.state.log("[crack] key not in wordlist")
 
